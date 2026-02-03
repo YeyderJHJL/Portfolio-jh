@@ -23,6 +23,11 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router"
 // Vue + Vite resuelven automáticamente el import dinámico
 // resultando en un chunk separado por vista
 
+// Layouts
+import PublicLayout from '../layouts/PublicLayout.vue'
+import AdminLayout from '../layouts/AdminLayout.vue'
+
+// Public views
 const Home = () => import("../views/Home.vue");
 const About = () => import("../views/About.vue");
 const Projects = () => import("../views/Projects.vue");
@@ -44,118 +49,135 @@ const NotFound = () => import("../views/NotFound.vue");
 // ============================================================
 
 const routes: RouteRecordRaw[] = [
-  // ========== HOME ==========
+  // ========== PUBLIC ==========
   {
-    path: "/",
-    name: "home",
-    component: Home,
-    meta: {
-      layout: "public",
-      title: "Home - Portfolio",
-    },
-  },
+    path: '/',
+    component: PublicLayout,
+    children: [
+    // ========== HOME ==========
+      {
+        path: "/",
+        name: "home",
+        component: Home,
+        meta: {
+          layout: "public",
+          title: "Home - Portfolio",
+        },
+      },
 
-  // ========== ABOUT ==========
-  {
-    path: "/about",
-    name: "about",
-    component: About,
-    meta: {
-      layout: "public",
-      title: "About - Portfolio",
-    },
-  },
+      // ========== ABOUT ==========
+      {
+        path: "/about",
+        name: "about",
+        component: About,
+        meta: {
+          layout: "public",
+          title: "About - Portfolio",
+        },
+      },
 
-  // ========== PROJECTS ==========
-  {
-    path: "/projects",
-    name: "projects",
-    component: Projects,
-    meta: {
-      layout: "public",
-      title: "Projects - Portfolio",
-    },
-  },
-  {
-    path: "/projects/:id",
-    name: "project-detail",
-    component: ProjectDetail,
-    meta: {
-      layout: "public",
-      title: "Project Detail - Portfolio",
-    },
-    props: true, // Pasar params como props al componente
-  },
+      // ========== PROJECTS ==========
+      {
+        path: "/projects",
+        name: "projects",
+        component: Projects,
+        meta: {
+          layout: "public",
+          title: "Projects - Portfolio",
+        },
+      },
+      {
+        path: "/projects/:id",
+        name: "project-detail",
+        component: ProjectDetail,
+        meta: {
+          layout: "public",
+          title: "Project Detail - Portfolio",
+        },
+        props: true, // Pasar params como props al componente
+      },
 
-  // ========== BLOG ==========
-  {
-    path: "/blog",
-    name: "blog",
-    component: Blog,
-    meta: {
-      layout: "public",
-      title: "Blog - Portfolio",
-    },
-  },
-  {
-    path: "/blog/:slug",
-    name: "blog-post",
-    component: BlogPost,
-    meta: {
-      layout: "public",
-      title: "Blog Post - Portfolio",
-    },
-    props: true,
-  },
+      // ========== BLOG ==========
+      {
+        path: "/blog",
+        name: "blog",
+        component: Blog,
+        meta: {
+          layout: "public",
+          title: "Blog - Portfolio",
+        },
+      },
+      {
+        path: "/blog/:slug",
+        name: "blog-post",
+        component: BlogPost,
+        meta: {
+          layout: "public",
+          title: "Blog Post - Portfolio",
+        },
+        props: true,
+      },
 
-  // ========== CONTACT ==========
-  {
-    path: "/contact",
-    name: "contact",
-    component: Contact,
-    meta: {
-      layout: "public",
-      title: "Contact - Portfolio",
-    },
+      // ========== CONTACT ==========
+      {
+        path: "/contact",
+        name: "contact",
+        component: Contact,
+        meta: {
+          layout: "public",
+          title: "Contact - Portfolio",
+        },
+      },
+    ]
   },
 
   // ========== ADMIN - Rutas protegidas ==========
   // Las rutas admin funcionan con un layout diferente
   // En un proyecto real, aquí iría protección con guards
-  {
-    path: '/admin/dashboard',
-    name: 'admin-dashboard',
-    component: AdminDashboard,
-    meta: { 
-      layout: "admin",
-      requiresAuth: true,
-      requiresAdmin: true,
-      title: 'Dashboard',
-    }
-  },
-  {
-    path: '/admin/projects',
-    name: 'admin-projects',
-    component: AdminProjects,
-    meta: { 
-      layout: "admin",
-      requiresAuth: true,
-      requiresAdmin: true,
-      title: 'Admin Projects',
-    }
-  },
-  {
-    path: '/admin/blog',
-    name: 'admin-blog',
-    component: AdminBlog,
-    meta: { 
-      layout: "admin",
-      requiresAuth: true,
-      requiresAdmin: true,
-      title: 'Admin Blog',
-    }
-  },
 
+  {
+    path: '/admin',
+    component: AdminLayout,
+    beforeEnter: () => {
+      const isAuth = true // luego Pinia cambiar ���
+      if (!isAuth) return '/'
+    },
+    children: [
+      {
+        path: '/dashboard',
+        name: 'admin-dashboard',
+        component: AdminDashboard,
+        meta: { 
+          layout: "admin",
+          requiresAuth: true,
+          requiresAdmin: true,
+          title: 'Dashboard',
+        }
+      },
+      {
+        path: '/projects',
+        name: 'admin-projects',
+        component: AdminProjects,
+        meta: { 
+          layout: "admin",
+          requiresAuth: true,
+          requiresAdmin: true,
+          title: 'Admin Projects',
+        }
+      },
+      {
+        path: '/blog',
+        name: 'admin-blog',
+        component: AdminBlog,
+        meta: { 
+          layout: "admin",
+          requiresAuth: true,
+          requiresAdmin: true,
+          title: 'Admin Blog',
+        }
+      },
+    ]
+  },
   // ========== 404 - Catch-all route (DEBE SER ÚLTIMO) ==========
   {
     path: "/:pathMatch(.*)*",

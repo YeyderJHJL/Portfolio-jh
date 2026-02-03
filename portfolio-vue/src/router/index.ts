@@ -31,6 +31,9 @@ const Blog = () => import("../views/Blog.vue");
 const BlogPost = () => import("../views/BlogPost.vue");
 const Contact = () => import("../views/Contact.vue");
 
+// Test component (temporary)
+const TestTailwind = () => import("../components/TestTailwind.vue");
+
 // Admin (rutas protegidas)
 const AdminDashboard = () => import("../views/admin/Dashboard.vue");
 const AdminProjects = () => import("../views/admin/Projects.vue");

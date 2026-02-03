@@ -32,7 +32,6 @@ const BlogPost = () => import("../views/BlogPost.vue");
 const Contact = () => import("../views/Contact.vue");
 
 // Admin (rutas protegidas)
-const AdminLayout = () => import("../layouts/AdminLayout.vue");
 const AdminDashboard = () => import("../views/admin/Dashboard.vue");
 const AdminProjects = () => import("../views/admin/Projects.vue");
 const AdminBlog = () => import("../views/admin/Blog.vue");

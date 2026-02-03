@@ -47,6 +47,17 @@ const NotFound = () => import("../views/NotFound.vue");
 // ============================================================
 
 const routes: RouteRecordRaw[] = [
+  // ========== TEST ROUTE (temporary) ==========
+  {
+    path: "/test-tailwind",
+    name: "test-tailwind",
+    component: TestTailwind,
+    meta: {
+      layout: "public",
+      title: "Test Tailwind - Portfolio",
+    },
+  },
+
   // ========== HOME ==========
   {
     path: "/",

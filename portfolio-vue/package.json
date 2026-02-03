@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@primevue/themes": "^4.5.4",
+    "@tailwindcss/vite": "^4.1.18",
     "@vueuse/core": "^14.2.0",
     "pinia": "^3.0.4",
     "primeicons": "^7.0.0",

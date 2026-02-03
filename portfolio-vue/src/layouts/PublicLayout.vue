@@ -1,16 +1,19 @@
 <template>
   <div class="public-layout">
     <!-- Header/Navbar -->
-    <header class="navbar">
+    <header class="navbar dark:bg-gray-900 dark:border-gray-700">
       <nav>
-        <router-link :to="{ name: 'home' }" class="logo">Portfolio</router-link>
-        <ul class="nav-links">
-          <li><router-link :to="{ name: 'home' }">Home</router-link></li>
-          <li><router-link :to="{ name: 'about' }">About</router-link></li>
-          <li><router-link :to="{ name: 'projects' }">Projects</router-link></li>
-          <li><router-link :to="{ name: 'blog' }">Blog</router-link></li>
-          <li><router-link :to="{ name: 'contact' }">Contact</router-link></li>
-        </ul>
+        <router-link :to="{ name: 'home' }" class="logo dark:text-white">Portfolio</router-link>
+        <div class="flex items-center gap-4">
+          <ul class="nav-links dark:text-white">
+            <li><router-link :to="{ name: 'home' }">Home</router-link></li>
+            <li><router-link :to="{ name: 'about' }">About</router-link></li>
+            <li><router-link :to="{ name: 'projects' }">Projects</router-link></li>
+            <li><router-link :to="{ name: 'blog' }">Blog</router-link></li>
+            <li><router-link :to="{ name: 'contact' }">Contact</router-link></li>
+            <li><DarkModeToggle /></li>
+          </ul>
+        </div>
       </nav>
     </header>
 
@@ -28,6 +31,7 @@
 
 <script setup lang="ts">
 // Layout público - usado por todas las rutas excepto admin
+import DarkModeToggle from '../components/DarkModeToggle.vue'
 </script>
 
 <style scoped>

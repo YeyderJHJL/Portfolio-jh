@@ -1,7 +1,7 @@
 <script setup lang="ts">
+// Los layouts ahora manejan DefaultLayout internamente
 </script>
 
 <template>
-  <!-- Las vistas se renderizan dentro de sus respectivos layouts -->
   <router-view />
 </template>

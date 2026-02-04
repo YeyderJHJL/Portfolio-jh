@@ -1,79 +1,88 @@
-<template>
-  <div class="admin-layout">
-    <aside class="admin-sidebar">
-      <nav>
-        <h2>Admin</h2>
-        <ul>
-          <li>
-            <router-link :to="{ name: 'admin-dashboard' }">Dashboard</router-link>
-          </li>
-          <li>
-            <router-link :to="{ name: 'admin-projects' }">Projects</router-link>
-          </li>
-          <li>
-            <router-link :to="{ name: 'admin-blog' }">Blog</router-link>
-          </li>
-        </ul>
-      </nav>
-    </aside>
-
-    <main class="admin-content">
-      <router-view />
-    </main>
-  </div>
-</template>
-
 <script setup lang="ts">
-// Layout admin - para rutas protegidas bajo /admin/*
-// Aquí irían controles de autenticación y permisos
+import { ref } from 'vue'
+import DefaultLayout from './DefaultLayout.vue'
+import AdminSidebar from '../components/AdminSidebar.vue'
+import DarkModeToggle from '../components/DarkModeToggle.vue'
+
+const sidebarOpen = ref(false)
+
+const openSidebar = () => {
+  sidebarOpen.value = true
+}
+
+const closeSidebar = () => {
+  sidebarOpen.value = false
+}
 </script>
 
-<style scoped>
-.admin-layout {
-  display: flex;
-  min-height: 100vh;
-}
+<template>
+  <DefaultLayout>
+    <div class="min-h-screen flex">
 
-.admin-sidebar {
-  width: 250px;
-  background-color: #2c3e50;
-  color: white;
-  padding: 2rem;
-  position: fixed;
-  height: 100vh;
-  overflow-y: auto;
-}
+      <!-- Sidebar -->
+      <AdminSidebar
+        :isSidebarOpen="sidebarOpen"
+        @close="closeSidebar"
+      />
 
-.admin-sidebar h2 {
-  margin: 0 0 2rem 0;
-}
+      <!-- Main content -->
+      <div
+        class="
+          flex-1 flex flex-col
+          lg:ml-64
+        "
+      >
+        <!-- Topbar (mobile / tablet) -->
+        <header
+          class="
+            sticky top-0 z-40
+            flex items-center justify-between
+            px-6 py-4
+            border-b border-primary-500/20
+            bg-primary-300/80 backdrop-blur
+            dark:bg-primary-950/80 dark:border-primary-800
+            lg:hidden
+          "
+        >
+          <button
+            @click="openSidebar"
+            class="
+              p-2 rounded-lg
+              hover:bg-primary-400
+              dark:hover:bg-primary-800
+              transition-colors
+            "
+            aria-label="Open sidebar"
+          >
+            <i class="pi pi-bars text-xl text-primary-900 dark:text-primary-200"></i>
+          </button>
 
-.admin-sidebar ul {
-  list-style: none;
-  padding: 0;
-}
+          <span
+            class="
+              font-semibold text-sm
+              bg-linear-to-r
+              from-accent-700 to-accent-400
+              dark:from-accent-300 dark:to-accent-100
+              bg-clip-text text-transparent
+            "
+          >
+            Admin Panel
+          </span>
 
-.admin-sidebar li {
-  margin-bottom: 1rem;
-}
+          <DarkModeToggle />
+        </header>
 
-.admin-sidebar a {
-  color: white;
-  text-decoration: none;
-  display: block;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  transition: background-color 0.2s;
-}
-
-.admin-sidebar a:hover,
-.admin-sidebar a.router-link-active {
-  background-color: #34495e;
-}
-
-.admin-content {
-  margin-left: 250px;
-  padding: 2rem;
-  flex: 1;
-}
-</style>
+        <!-- Page content -->
+        <main
+          class="
+            flex-1
+            px-6 py-6
+            transition-colors
+          "
+        >
+          <router-view />
+        </main>
+      </div>
+    </div>
+  </DefaultLayout>
+</template>

@@ -3,54 +3,54 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  /* =========================
-     PRIMARY (estructura / fondos)
-     ========================= */
+   /* =========================
+      PRIMARY (estructura / fondos)
+      ========================= */
 
-  /* Dark */
-  --color-primary-950: #000101; /* fondo más profundo */
-  --color-primary-900: #0B2839; /* fondo principal dark */
-  --color-primary-800: #10475E; /* cards / sidebar */
-  --color-primary-700: #3D717E; /* hover / overlays */
-  --color-primary-600: #406473; /* elementos activos */
+   /* Dark */
+   --color-primary-950: #000101; /* fondo más profundo */
+   --color-primary-900: #0B2839; /* fondo principal dark */
+   --color-primary-800: #10475E; /* cards / sidebar */
+   --color-primary-700: #3D717E; /* hover / overlays */
+   --color-primary-600: #406473; /* elementos activos */
 
-  /* Light */
-  --color-primary-500: #F5F1EA; /* fondo general */
-  --color-primary-400: #FFFFFF; /* cards */
-  --color-primary-300: #D7C9B8; /* separadores */
-  --color-primary-200: #B2967D; /* elementos suaves */
+   /* Light */
+   --color-primary-500: #F5F1EA; /* fondo general */
+   --color-primary-400: #FFFFFF; /* cards */
+   --color-primary-300: #D7C9B8; /* separadores */
+   --color-primary-200: #B2967D; /* elementos suaves */
 
-  /* =========================
-     ACCENT (acciones / foco)
-     ========================= */
-  
-    --color-accent-950: #3A1F0B; /* muy oscuro (hover dark fuerte) */
-  --color-accent-900: #5A3211; /* base oscura */
-  --color-accent-800: #964405;
-  --color-accent-700: #D68631; /* CTA principal */
-  --color-accent-600: #F3BD68; /* hover / secondary CTA */
-  --color-accent-500: #FFD700; /* highlight */
+   /* =========================
+      ACCENT (acciones / foco)
+      ========================= */
+   
+   --color-accent-950: #3A1F0B; /* muy oscuro (hover dark fuerte) */
+   --color-accent-900: #5A3211; /* base oscura */
+   --color-accent-800: #964405;
+   --color-accent-700: #D68631; /* CTA principal */
+   --color-accent-600: #F3BD68; /* hover / secondary CTA */
+   --color-accent-500: #FFD700; /* highlight */
 
-  --color-accent-400: #FFE27A; /* light hover */
-  --color-accent-300: #FFEDB0; /* gradientes light */
-  --color-accent-200: #FFF4D1; /* fondos suaves */
+   --color-accent-400: #FFE27A; /* light hover */
+   --color-accent-300: #FFEDB0; /* gradientes light */
+   --color-accent-200: #FFF4D1; /* fondos suaves */
 
-  /* =========================
-     TEXTO
-     ========================= */
+   /* =========================
+      TEXTO
+      ========================= */
 
-  --color-text-dark-primary: #F3F4F6;
-  --color-text-dark-secondary: #CBD5E1;
-  --color-text-dark-muted: #94A3B8;
+   --color-text-dark-primary: #F3F4F6;
+   --color-text-dark-secondary: #CBD5E1;
+   --color-text-dark-muted: #94A3B8;
 
-  --color-text-light-primary: #1F2937;
-  --color-text-light-secondary: #4A342A;
-  --color-text-light-muted: #7D5A44;
+   --color-text-light-primary: #1F2937;
+   --color-text-light-secondary: #4A342A;
+   --color-text-light-muted: #7D5A44;
 
-  /* =========================
-     FONT
-     ========================= */
+   /* =========================
+      FONT
+      ========================= */
 
-  --font-sans: Inter, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, sans-serif;
+   --font-sans: Inter, system-ui, -apple-system, BlinkMacSystemFont,
+      "Segoe UI", Roboto, sans-serif;
 }

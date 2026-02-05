@@ -7,6 +7,8 @@
  * Stack técnico de un proyecto
  * Agrupa todas las tecnologías utilizadas por categoría
  */
+// src/types/index.ts
+
 export interface TechStack {
   frontend?: string[];
   backend?: string[];
@@ -18,22 +20,24 @@ export interface TechStack {
 
 /**
  * Desafío técnico resuelto en un proyecto
- * Documenta el problema, solución y aprendizaje
+ * Documenta problema, solución, impacto y aprendizaje
  */
 export interface Challenge {
   title: string;
   description: string;
   solution: string;
   impact?: string; // ej: "40% mejora en performance"
+  lessonsLearned?: string; // reflejar aprendizaje o insight
 }
 
 /**
- * Enlace a recurso externo (demo, repo, blog, etc)
+ * Enlace a recurso externo (demo, repo, blog, video, etc)
  */
 export interface ExternalLink {
   label: string;
   url: string;
   icon?: string; // ej: "github", "external-link", "play"
+  type?: "demo" | "code" | "article" | "video"; // ayuda en la UI
 }
 
 /**
@@ -46,45 +50,45 @@ export interface Project {
   slug: string;
   shortDescription: string;
   fullDescription: string;
-  
+
   // Problema y solución
   problem: string;
   solution: string;
-  
+
   // Stack técnico
   techStack: TechStack;
-  
+
   // Aspectos visuales
   images: {
     thumbnail: string;
     hero: string;
-    screenshots: string[];
+    screenshots?: string[];
   };
-  
+
   // Contenido técnico
-  challenges: Challenge[];
-  keyFeatures: string[];
-  
+  challenges?: Challenge[];
+  keyFeatures?: string[];
+
   // Resultados/Métricas
   metrics?: {
     label: string;
     value: string;
   }[];
-  
+
   // Enlaces externos
-  links: ExternalLink[];
-  
+  links?: ExternalLink[];
+
   // Metadatos
   featured: boolean;
   startDate: string; // ISO 8601
   endDate?: string; // ISO 8601
-  tags: string[];
+  tags?: string[];
   category?: "frontend" | "fullstack" | "backend" | "mobile" | "other";
+  status?: "completed" | "in-progress" | "concept"; // para filtrar
 }
 
 /**
  * Artículo del blog
- * Para documentar aprendizajes y tutoriales
  */
 export interface BlogPost {
   id: string;
@@ -95,29 +99,43 @@ export interface BlogPost {
   author: string;
   publishedAt: string; // ISO 8601
   updatedAt?: string; // ISO 8601
-  
+
   // Metadatos
-  tags: string[];
+  tags?: string[];
   featured: boolean;
-  readingTimeMinutes: number;
-  
+  readingTimeMinutes?: number;
+
   // Visuales
   thumbnail?: string;
-  
+
   // SEO
   seoDescription?: string;
 }
 
 /**
  * Habilidad técnica
- * Soporta niveles visuales para mostrar profundidad
  */
 export interface Skill {
   name: string;
   proficiency: "beginner" | "intermediate" | "advanced" | "expert";
   yearsOfExperience?: number;
   endorsements?: number;
+
+  category?:
+    | "frontend"
+    | "backend"
+    | "devops"
+    | "data"
+    | "qa"
+    | "pm"
+    | "soft"
+    | "other";
+
+  /** Icono opcional para UI (ej: "vue", "react", "docker") */
+  icon?: string;
+  color?: string; 
 }
+
 
 /**
  * Certificación profesional
@@ -139,13 +157,12 @@ export interface TimelineEvent {
   date: string; // ISO 8601
   title: string;
   description: string;
-  type: "education" | "achievement" | "project" | "certification";
+  type: "education" | "achievement" | "project" | "certification" | "experience";
   tags?: string[];
 }
 
 /**
  * Información del perfil/usuario
- * Para la sección About y datos generales del portafolio
  */
 export interface UserProfile {
   id: string;
@@ -153,21 +170,22 @@ export interface UserProfile {
   title: string; // ej: "Full Stack Developer"
   bio: string;
   avatar?: string;
-  
+
   // Redes profesionales
   social: {
     github?: string;
     linkedin?: string;
     twitter?: string;
     email: string;
+    website?: string;
   };
-  
+
   // About section
   story: string;
-  skills: Skill[];
-  certifications: Certification[];
-  timeline: TimelineEvent[];
-  
+  skills?: Skill[];
+  certifications?: Certification[];
+  timeline?: TimelineEvent[];
+
   // Preferencias
   theme?: "light" | "dark";
   language?: string;
@@ -188,7 +206,6 @@ export interface ContactMessage {
 
 /**
  * Respuesta genérica del API
- * Útil para manejo consistente de errores
  */
 export interface ApiResponse<T> {
   success: boolean;
@@ -210,3 +227,4 @@ export interface PaginatedResponse<T> {
   pageSize: number;
   hasMore: boolean;
 }
+

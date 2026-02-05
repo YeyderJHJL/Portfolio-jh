@@ -7,22 +7,24 @@ const { isDark, toggleDark } = useDarkMode()
 <template>
   <button
     @click="toggleDark"
+    aria-label="Toggle dark mode"
     class="
-    p-2 rounded-lg transition-colors
-    hover:bg-primary-300
-    dark:hover:bg-primary-800
-  "
+      p-2 rounded-lg
+      hover:bg-primary-800
+      transition-all duration-200
+      active:scale-95
+    "
   >
     <!-- Sol = modo claro -->
     <i
       v-if="isDark"
       class="pi pi-sun text-accent-400 text-xl"
-    ></i>
+    />
 
     <!-- Luna = modo oscuro -->
     <i
       v-else
-      class="pi pi-moon text-primary-500 dark:text-primary-700 text-xl"
-    ></i>
+      class="pi pi-moon text-text-dark-secondary text-xl"
+    />
   </button>
 </template>

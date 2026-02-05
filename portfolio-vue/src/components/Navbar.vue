@@ -17,11 +17,13 @@ const closeMobileMenu = () => {
   <header
     class="
       sticky top-0 z-50
-      border-b border-primary-500/20
-      bg-linear-to-b
-      from-primary-300 to-primary-500
-      dark:from-primary-950 dark:to-primary-900
       backdrop-blur
+
+      bg-linear-to-b
+      from-primary-950 to-primary-900
+      border-b border-primary-800/60
+
+      text-text-dark-primary
     "
   >
     <nav class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -32,8 +34,7 @@ const closeMobileMenu = () => {
         class="
           text-xl font-bold tracking-tight
           bg-linear-to-r
-          from-accent-700 to-accent-600
-          dark:from-accent-400 dark:to-accent-200
+          from-accent-600 to-accent-500
           bg-clip-text text-transparent
           transition-all
         "
@@ -48,75 +49,59 @@ const closeMobileMenu = () => {
             :to="{ name: 'home' }"
             class="
               text-sm font-medium
-              bg-linear-to-r
-              from-accent-700 to-accent-400
-              dark:from-accent-300 dark:to-accent-100
-              bg-clip-text text-transparent
-              hover:from-accent-600 hover:to-accent-300
-              dark:hover:from-accent-200 dark:hover:to-accent-50
-              transition-all duration-300
+              text-text-dark-secondary
+              hover:text-accent-400 hover:tracking-wide
+              transition-all duration-200
             "
-          >Home</router-link>
+          >HOME</router-link>
         </li>
+
         <li>
           <router-link
             :to="{ name: 'projects' }"
             class="
               text-sm font-medium
-              bg-linear-to-r
-              from-accent-700 to-accent-400
-              dark:from-accent-300 dark:to-accent-100
-              bg-clip-text text-transparent
-              hover:from-accent-600 hover:to-accent-300
-              dark:hover:from-accent-200 dark:hover:to-accent-50
-              transition-all duration-300
+              text-text-dark-secondary
+              hover:text-accent-400 hover:tracking-wide
+              transition-all duration-200
             "
-          >Projects</router-link>
+          >PROJECTS</router-link>
         </li>
+
         <li>
           <router-link
             :to="{ name: 'blog' }"
             class="
               text-sm font-medium
-              bg-linear-to-r
-              from-accent-700 to-accent-400
-              dark:from-accent-300 dark:to-accent-100
-              bg-clip-text text-transparent
-              hover:from-accent-600 hover:to-accent-300
-              dark:hover:from-accent-200 dark:hover:to-accent-50
-              transition-all duration-300
+              text-text-dark-secondary
+              hover:text-accent-400 hover:tracking-wide
+              transition-all duration-200
             "
-          >Blog</router-link>
+          >BLOG</router-link>
         </li>
+
         <li>
           <router-link
             :to="{ name: 'about' }"
             class="
               text-sm font-medium
-              bg-linear-to-r
-              from-accent-700 to-accent-400
-              dark:from-accent-300 dark:to-accent-100
-              bg-clip-text text-transparent
-              hover:from-accent-600 hover:to-accent-300
-              dark:hover:from-accent-200 dark:hover:to-accent-50
-              transition-all duration-300
+              text-text-dark-secondary
+              hover:text-accent-400 hover:tracking-wide
+              transition-all duration-200
             "
-          >About</router-link>
+          >ABOUT</router-link>
         </li>
+
         <li>
           <router-link
             :to="{ name: 'contact' }"
             class="
               text-sm font-medium
-              bg-linear-to-r
-              from-accent-700 to-accent-400
-              dark:from-accent-300 dark:to-accent-100
-              bg-clip-text text-transparent
-              hover:from-accent-600 hover:to-accent-300
-              dark:hover:from-accent-200 dark:hover:to-accent-50
-              transition-all duration-300
+              text-text-dark-secondary
+              hover:text-accent-400 hover:tracking-wide
+              transition-all duration-200
             "
-          >Contact</router-link>
+          >CONTACT</router-link>
         </li>
       </ul>
 
@@ -126,13 +111,17 @@ const closeMobileMenu = () => {
 
         <button
           class="
-            md:hidden p-2 rounded-lg
-            hover:bg-primary-400 dark:hover:bg-primary-800
-            transition-colors
+            md:hidden
+            p-2 rounded-lg
+
+            text-accent-400
+            hover:bg-primary-800
+
+            transition-colors duration-200
           "
           @click="toggleMobileMenu"
         >
-          <i class="pi pi-bars text-xl text-primary-800 dark:text-primary-300"></i>
+          <i class="pi pi-bars text-xl"></i>
         </button>
       </div>
     </nav>
@@ -142,63 +131,84 @@ const closeMobileMenu = () => {
       v-if="isMobileMenuOpen"
       class="
         md:hidden
-        border-t border-primary-500/20
-        bg-linear-to-b
-        from-primary-300 to-primary-500
-        dark:from-primary-950 dark:to-primary-900
+        absolute top-full left-0 w-full z-50
+
+        bg-primary-900
+        border-t border-primary-800
+
+        transition-all
       "
     >
       <ul class="px-6 py-4 space-y-4">
-        <li><router-link @click="closeMobileMenu" class="
-                                                  text-sm font-medium
-                                                  bg-linear-to-r
-                                                  from-accent-700 to-accent-400
-                                                  dark:from-accent-300 dark:to-accent-100
-                                                  bg-clip-text text-transparent
-                                                  hover:from-accent-600 hover:to-accent-300
-                                                  dark:hover:from-accent-200 dark:hover:to-accent-50
-                                                  transition-all duration-300
-          " :to="{ name: 'home' }">Home</router-link></li>
-        <li><router-link @click="closeMobileMenu" class="
-                                                  text-sm font-medium
-                                                  bg-linear-to-r
-                                                  from-accent-700 to-accent-400
-                                                  dark:from-accent-300 dark:to-accent-100
-                                                  bg-clip-text text-transparent
-                                                  hover:from-accent-600 hover:to-accent-300
-                                                  dark:hover:from-accent-200 dark:hover:to-accent-50
-                                                  transition-all duration-300
-          " :to="{ name: 'projects' }">Projects</router-link></li>
-        <li><router-link @click="closeMobileMenu" class="
-                                                  text-sm font-medium
-                                                  bg-linear-to-r
-                                                  from-accent-700 to-accent-400
-                                                  dark:from-accent-300 dark:to-accent-100
-                                                  bg-clip-text text-transparent
-                                                  hover:from-accent-600 hover:to-accent-300
-                                                  dark:hover:from-accent-200 dark:hover:to-accent-50
-                                                  transition-all duration-300
-          " :to="{ name: 'blog' }">Blog</router-link></li>
-        <li><router-link @click="closeMobileMenu" class="
-                                                  text-sm font-medium
-                                                  bg-linear-to-r
-                                                  from-accent-700 to-accent-400
-                                                  dark:from-accent-300 dark:to-accent-100
-                                                  bg-clip-text text-transparent
-                                                  hover:from-accent-600 hover:to-accent-300
-                                                  dark:hover:from-accent-200 dark:hover:to-accent-50
-                                                  transition-all duration-300
-          " :to="{ name: 'about' }">About</router-link></li>
-        <li><router-link @click="closeMobileMenu" class="
-                                                  text-sm font-medium
-                                                  bg-linear-to-r
-                                                  from-accent-700 to-accent-400
-                                                  dark:from-accent-300 dark:to-accent-100
-                                                  bg-clip-text text-transparent
-                                                  hover:from-accent-600 hover:to-accent-300
-                                                  dark:hover:from-accent-200 dark:hover:to-accent-50
-                                                  transition-all duration-300
-          " :to="{ name: 'contact' }">Contact</router-link></li>
+        <li>
+          <router-link
+            @click="closeMobileMenu"
+            :to="{ name: 'home' }"
+            class="
+              block
+              text-sm font-medium
+              text-text-dark-secondary
+              hover:text-accent-400
+              transition-colors duration-200
+            "
+          >Home</router-link>
+        </li>
+
+        <li>
+          <router-link
+            @click="closeMobileMenu"
+            :to="{ name: 'projects' }"
+            class="
+              block
+              text-sm font-medium
+              text-text-dark-secondary
+              hover:text-accent-400
+              transition-colors duration-200
+            "
+          >Projects</router-link>
+        </li>
+
+        <li>
+          <router-link
+            @click="closeMobileMenu"
+            :to="{ name: 'blog' }"
+            class="
+              block
+              text-sm font-medium
+              text-text-dark-secondary
+              hover:text-accent-400
+              transition-colors duration-200
+            "
+          >Blog</router-link>
+        </li>
+
+        <li>
+          <router-link
+            @click="closeMobileMenu"
+            :to="{ name: 'about' }"
+            class="
+              block
+              text-sm font-medium
+              text-text-dark-secondary
+              hover:text-accent-400
+              transition-colors duration-200
+            "
+          >About</router-link>
+        </li>
+
+        <li>
+          <router-link
+            @click="closeMobileMenu"
+            :to="{ name: 'contact' }"
+            class="
+              block
+              text-sm font-medium
+              text-text-dark-secondary
+              hover:text-accent-400
+              transition-colors duration-200
+            "
+          >Contact</router-link>
+        </li>
       </ul>
     </div>
   </header>

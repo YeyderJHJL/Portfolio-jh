@@ -1,345 +1,259 @@
-/**
- * Pinia Store - Projects
- * Composition API style (más moderno y flexible que Options API)
- * 
- * Gestiona:
- * - Estado de proyectos (lista, loading, errores)
- * - Filtrado y búsqueda
- * - CRUD básico (simulado con mock data)
- * 
- * En producción, reemplazar las acciones con llamadas reales a API
- */
-
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import type { Project } from "../types";
 
 // ============================================================
-// MOCK DATA - Reemplazar con API calls en producción
+// MOCK DATA
+// Reemplazar con llamadas API en producción
 // ============================================================
 
 const MOCK_PROJECTS: Project[] = [
+  // ========================
+  // PROYECTOS TI
+  // ========================
   {
-    id: "1",
-    title: "TaskFlow - Gestor de Tareas Colaborativo",
-    slug: "taskflow",
-    shortDescription:
-      "App web colaborativa en tiempo real para gestión de tareas",
-    fullDescription:
-      "Una herramienta moderna para equipos pequeños que necesitan gestionar tareas sin la complejidad de Jira.",
-    problem:
-      "Los equipos pequeños necesitan una herramienta simple para gestionar tareas sin la complejidad de Jira o Asana.",
-    solution:
-      "App web colaborativa en tiempo real con Kanban board intuitivo, asignación de tareas, notificaciones real-time y dashboard de progreso.",
+    id: "bioforecast",
+    title: "BioForecast - Plataforma de análisis satelital",
+    slug: "bioforecast",
+    shortDescription: "Web para análisis de datos satelitales y aptitud de suelo.",
+    fullDescription: "Plataforma web para análisis de datos satelitales aplicada a agricultura sostenible, con integración de APIs y despliegue en Vercel.",
+    problem: "Necesidad de análisis rápido y confiable de datos satelitales para cultivos sostenibles.",
+    solution: "Implementación de plataforma web con integración de APIs, análisis de datos en tiempo real y despliegue cloud.",
     techStack: {
       frontend: ["React", "TypeScript", "Tailwind CSS"],
-      backend: ["Node.js", "Express", "Socket.io"],
-      database: ["MongoDB"],
-      devOps: ["Vercel", "Railway"],
-      testing: ["Jest", "Cypress"],
+      backend: ["Node.js", "Express"],
+      database: ["PostgreSQL"],
+      devOps: ["Vercel", "Docker"],
+      testing: ["Jest"],
     },
     images: {
-      thumbnail:
-        "https://images.unsplash.com/photo-1611606063065-cb86f3fb9bcf?w=400&h=300&fit=crop",
-      hero: "https://images.unsplash.com/photo-1611606063065-cb86f3fb9bcf?w=1200&h=600&fit=crop",
-      screenshots: [
-        "https://images.unsplash.com/photo-1611606063065-cb86f3fb9bcf",
-      ],
+      thumbnail: "https://via.placeholder.com/400x300?text=BioForecast",
+      hero: "https://via.placeholder.com/1200x600?text=BioForecast",
+      screenshots: ["https://via.placeholder.com/800x400?text=Screenshot+1"],
     },
     challenges: [
       {
-        title: "Real-time sync",
-        description: "Mantener todos los clientes sincronizados en tiempo real",
-        solution: "Implementé Socket.io para updates instantáneos",
-        impact: "Sincronización de 0ms entre usuarios",
-      },
-      {
-        title: "Performance",
-        description: "Demasiados re-renders ralentizaban la interfaz",
-        solution: "Optimicé con React.memo y useCallback",
-        impact: "40% mejora en performance",
+        title: "Integración de APIs",
+        description: "Conectar múltiples fuentes de datos satelitales y agrícolas.",
+        solution: "Uso de fetch/axios y estandarización de datos.",
+        impact: "Procesamiento de datos más rápido y confiable.",
       },
     ],
     keyFeatures: [
-      "Kanban board intuitivo",
-      "Asignación de tareas",
-      "Notificaciones real-time",
-      "Dashboard de progreso",
+      "Dashboard de análisis satelital",
+      "Visualización de aptitud de suelo",
+      "Integración de múltiples APIs",
+      "Despliegue en cloud"
     ],
     metrics: [
-      { label: "Lighthouse", value: "94/100" },
-      { label: "API Response Time", value: "<150ms" },
+      { label: "Usuarios beta", value: "50+" },
+      { label: "Tiempo de carga promedio", value: "<1s" }
     ],
     links: [
-      {
-        label: "Ver Demo",
-        url: "https://taskflow.vercel.app",
-        icon: "external-link",
-      },
-      {
-        label: "Ver Código",
-        url: "https://github.com/usuario/taskflow",
-        icon: "github",
-      },
+      { label: "Ver Demo", url: "https://bioforecast.vercel.app", icon: "external-link" }
     ],
     featured: true,
-    startDate: "2024-01-15",
-    endDate: "2024-03-30",
-    tags: ["react", "realtime", "collaboration"],
+    startDate: "2025-10-01",
+    endDate: "2025-10-31",
+    tags: ["react", "nodejs", "satellite-data", "analytics"],
     category: "fullstack",
   },
   {
-    id: "2",
-    title: "DataViz - Dashboard Analítico",
-    slug: "dataviz",
-    shortDescription: "Dashboard interactivo para visualización de datos",
-    fullDescription:
-      "Plataforma de análisis de datos con visualizaciones interactivas y reportes en tiempo real.",
-    problem:
-      "Las empresas tienen datos pero no pueden visualizarlos de forma clara y accionable.",
-    solution:
-      "Dashboard con gráficos interactivos, filtros avanzados y exportación de reportes.",
+    id: "flowtechai",
+    title: "FlowTechAI - Hackatón Innovasur",
+    slug: "flowtechai",
+    shortDescription: "Prototipo AI desarrollado en hackatón, reconocido en mercado.",
+    fullDescription: "Desarrollo de prototipo funcional con coordinación de equipo multidisciplinario, diseño de arquitectura y validación técnica.",
+    problem: "Necesidad de crear prototipos rápidos y funcionales en hackatón con un equipo diverso.",
+    solution: "Definición de flujo de trabajo, coordinación técnica y diseño de arquitectura para validar el prototipo.",
     techStack: {
-      frontend: ["Vue 3", "TypeScript", "D3.js", "Chart.js"],
-      backend: ["Python", "FastAPI"],
-      database: ["PostgreSQL"],
-      devOps: ["Docker", "AWS"],
+      frontend: ["Figma", "React"],
+      backend: ["Node.js"],
+      database: ["MongoDB"],
+      devOps: ["Vercel"],
+      testing: [],
     },
     images: {
-      thumbnail:
-        "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop",
-      hero: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop",
-      screenshots: [
-        "https://images.unsplash.com/photo-1551288049-bebda4e38f71",
-      ],
+      thumbnail: "https://via.placeholder.com/400x300?text=FlowTechAI",
+      hero: "https://via.placeholder.com/1200x600?text=FlowTechAI",
+      screenshots: ["https://via.placeholder.com/800x400?text=Screenshot+1"],
     },
     challenges: [
       {
-        title: "Rendering de grandes datasets",
-        description:
-          "Visualizar millones de puntos de datos sin freezear la app",
-        solution: "Virtualization y WebGL rendering",
-        impact: "Soporta datasets de 10M+ registros",
+        title: "Coordinación de equipo multidisciplinario",
+        description: "Integrar roles de TI, ingeniería, ciencias y administración.",
+        solution: "Asignación de responsabilidades claras y seguimiento ágil.",
+        impact: "Prototipo funcional y reconocido en hackatón.",
       },
     ],
     keyFeatures: [
-      "Gráficos interactivos",
-      "Filtros en tiempo real",
-      "Exportación de reportes",
-      "Comparación histórica",
+      "Prototipo funcional AI",
+      "Diseño de arquitectura",
+      "Validación técnica",
+      "Presentación de pitch final"
     ],
     metrics: [
-      { label: "Query Time", value: "<500ms" },
-      { label: "Usuarios Activos", value: "1000+" },
+      { label: "Reconocimiento en hackatón", value: "Competente en mercado" }
     ],
     links: [
-      {
-        label: "Ver Demo",
-        url: "https://dataviz-app.com",
-        icon: "external-link",
-      },
-      {
-        label: "Ver Código",
-        url: "https://github.com/usuario/dataviz",
-        icon: "github",
-      },
+      { label: "Figma Prototype", url: "https://rigor-even-07466876.figma.site", icon: "external-link" }
     ],
     featured: true,
-    startDate: "2024-02-01",
-    tags: ["vue", "data-visualization", "analytics"],
-    category: "frontend",
+    startDate: "2025-10-01",
+    endDate: "2025-10-31",
+    tags: ["ai", "hackathon", "team-lead"],
+    category: "fullstack",
   },
+  // ========================
+  // PROYECTOS PM / Gestión
+  // ========================
+  {
+    id: "hack4edu",
+    title: "Hack4Edu - Coordinación Local",
+    slug: "hack4edu",
+    shortDescription: "Organización y gestión del Hack4Edu 2025 (UNSA).",
+    fullDescription: "Gestión completa del evento: logística, comunicación, equipos y cumplimiento de objetivos. Consolidación de programa formativo tecnológico.",
+    problem: "Necesidad de coordinar un hackatón internacional en tiempo limitado.",
+    solution: "Implementación de cronogramas, comunicación efectiva y seguimiento de equipos.",
+    techStack: {
+      frontend: [],
+      backend: [],
+      database: [],
+      devOps: [],
+      testing: [],
+    },
+    images: {
+      thumbnail: "https://via.placeholder.com/400x300?text=Hack4Edu",
+      hero: "https://via.placeholder.com/1200x600?text=Hack4Edu",
+      screenshots: ["https://via.placeholder.com/800x400?text=Screenshot+1"],
+    },
+    challenges: [
+      {
+        title: "Coordinación de evento internacional",
+        description: "Planificación, gestión de participantes y cumplimiento de objetivos.",
+        solution: "Diseño de plan operativo y seguimiento constante.",
+        impact: "Evento exitoso y de alto impacto educativo.",
+      },
+    ],
+    keyFeatures: [
+      "Planificación de hackatón",
+      "Gestión de equipos",
+      "Logística y comunicación",
+      "Cumplimiento de objetivos"
+    ],
+    metrics: [
+      { label: "Participantes", value: "50+" },
+      { label: "Duración del evento", value: "3 semanas" }
+    ],
+    links: [],
+    featured: true,
+    startDate: "2025-10-01",
+    endDate: "2025-10-21",
+    tags: ["pm", "coordination", "event"],
+    category: "other",
+  }
 ];
 
 // ============================================================
-// STATE - Definición del estado reactivo
+// STORE - Pinia
 // ============================================================
 
 export const useProjectsStore = defineStore("projects", () => {
-  // State
   const projects = ref<Project[]>(MOCK_PROJECTS);
   const loading = ref(false);
   const error = ref<string | null>(null);
 
-  // ============================================================
-  // GETTERS - Selectores derivados del estado
-  // ============================================================
+  // ========================
+  // GETTERS
+  // ========================
 
-  /**
-   * Obtiene solo los proyectos destacados (featured: true)
-   * Útil para mostrar en home o secciones especiales
-   */
-  const featuredProjects = computed(() => {
-    return projects.value.filter((p) => p.featured);
-  });
+  const featuredProjects = computed(() => projects.value.filter(p => p.featured));
 
-  /**
-   * Obtiene proyectos por categoría
-   * Útil para filtrados en la vista Projects
-   */
   const projectsByCategory = computed(() => {
-    return (category: string) => {
-      return projects.value.filter((p) => p.category === category);
-    };
+    return (category: string) => projects.value.filter(p => p.category === category);
   });
 
-  /**
-   * Obtiene un proyecto por su ID
-   * Se usa para mostrar detalles de un proyecto
-   */
   const projectById = computed(() => {
-    return (id: string) => {
-      return projects.value.find((p) => p.id === id);
-    };
+    return (id: string) => projects.value.find(p => p.id === id);
   });
 
-  /**
-   * Obtiene proyectos que usan una tecnología específica
-   * Útil para filtrar por skills en la UI
-   */
   const projectsByTech = computed(() => {
-    return (tech: string) => {
-      return projects.value.filter((project) => {
-        const allTechs = [
-          ...(project.techStack.frontend || []),
-          ...(project.techStack.backend || []),
-          ...(project.techStack.database || []),
-          ...(project.techStack.devOps || []),
-          ...(project.techStack.testing || []),
-        ];
-        return allTechs.some(
-          (t) => t.toLowerCase() === tech.toLowerCase()
-        );
-      });
-    };
+    return (tech: string) => projects.value.filter(project => {
+      const allTechs = [
+        ...(project.techStack.frontend || []),
+        ...(project.techStack.backend || []),
+        ...(project.techStack.database || []),
+        ...(project.techStack.devOps || []),
+        ...(project.techStack.testing || []),
+        ...(project.techStack.other || []),
+      ];
+      return allTechs.some(t => t.toLowerCase() === tech.toLowerCase());
+    });
   });
 
-  /**
-   * Obtiene el total de proyectos
-   */
   const totalProjects = computed(() => projects.value.length);
 
-  // ============================================================
-  // ACTIONS - Mutadores de estado (lado del negocio)
-  // ============================================================
+  // ========================
+  // ACTIONS
+  // ========================
 
-  /**
-   * Simula una llamada al servidor para obtener proyectos
-   * En producción: llamar a API real
-   * 
-   * Maneja:
-   * - Loading state
-   * - Error handling
-   * - Simulación de delay de red
-   */
   const fetchProjects = async (): Promise<void> => {
     loading.value = true;
     error.value = null;
-
     try {
-      // Simular delay de red (reemplazar con fetch/axios en producción)
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      // En producción:
-      // const response = await fetch('/api/projects');
-      // projects.value = await response.json();
-
-      // Por ahora, projects ya está poblado con MOCK_DATA
-      // pero esto demuestra el patrón correcto
+      await new Promise(resolve => setTimeout(resolve, 800));
     } catch (err) {
-      error.value =
-        err instanceof Error ? err.message : "Error fetching projects";
+      error.value = err instanceof Error ? err.message : "Error fetching projects";
       console.error("Error fetching projects:", err);
     } finally {
       loading.value = false;
     }
   };
 
-  /**
-   * Agrega un nuevo proyecto al store
-   * En producción: POST a /api/projects
-   */
   const addProject = (project: Project): void => {
-    // Validación básica
     if (!project.id || !project.title) {
       error.value = "Project must have id and title";
       return;
     }
-
-    // Verificar que no exista duplicado
-    if (projects.value.some((p) => p.id === project.id)) {
+    if (projects.value.some(p => p.id === project.id)) {
       error.value = `Project with id ${project.id} already exists`;
       return;
     }
-
     projects.value.push(project);
     error.value = null;
   };
 
-  /**
-   * Actualiza un proyecto existente
-   * En producción: PATCH a /api/projects/:id
-   */
   const updateProject = (id: string, updates: Partial<Project>): void => {
-    const index = projects.value.findIndex((p) => p.id === id);
-
+    const index = projects.value.findIndex(p => p.id === id);
     if (index === -1) {
       error.value = `Project with id ${id} not found`;
       return;
     }
-
-    // Merge con valores existentes - castear a Project para satisfacer tipos
-    projects.value[index] = {
-      ...projects.value[index],
-      ...updates,
-      id, // Asegurar que id no cambie
-    } as Project;
-
+    projects.value[index] = { ...projects.value[index], ...updates, id } as Project;
     error.value = null;
   };
 
-  /**
-   * Elimina un proyecto
-   * En producción: DELETE a /api/projects/:id
-   */
   const deleteProject = (id: string): void => {
-    const index = projects.value.findIndex((p) => p.id === id);
-
+    const index = projects.value.findIndex(p => p.id === id);
     if (index === -1) {
       error.value = `Project with id ${id} not found`;
       return;
     }
-
     projects.value.splice(index, 1);
     error.value = null;
   };
 
-  /**
-   * Limpia errores
-   * Útil para cerrar notificaciones de error en UI
-   */
-  const clearError = (): void => {
-    error.value = null;
-  };
-
-  // ============================================================
-  // EXPORT
-  // ============================================================
+  const clearError = (): void => { error.value = null; };
 
   return {
-    // State
     projects,
     loading,
     error,
-
-    // Getters
     featuredProjects,
     projectsByCategory,
     projectById,
     projectsByTech,
     totalProjects,
-
-    // Actions
     fetchProjects,
     addProject,
     updateProject,

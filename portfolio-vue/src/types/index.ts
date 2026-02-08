@@ -1,21 +1,11 @@
-/**
- * Tipos e interfaces principales para el Portfolio
- * Diseñados para soportar una estructura escalable y profesional
- */
 
-/**
- * Stack técnico de un proyecto
- * Agrupa todas las tecnologías utilizadas por categoría
- */
-// src/types/index.ts
-
-export interface TechStack {
-  frontend?: string[];
-  backend?: string[];
-  database?: string[];
-  devOps?: string[];
-  testing?: string[];
-  other?: string[];
+export interface ProjectStack {
+  technologies?: string[];   // React, Node, PHP, AWS
+  tools?: string[];          // Figma, Jira, Notion, Slack
+  methodologies?: string[];  // Scrum, Agile, Design Thinking
+  platforms?: string[];      // WordPress, Vercel, AWS, Figma
+  domains?: string[];        // AI, Education, Social Impact, Startups
+  skills?: string[];         // Leadership, QA, Coordination, Mentoring
 }
 
 /**
@@ -40,6 +30,19 @@ export interface ExternalLink {
   type?: "demo" | "code" | "article" | "video"; // ayuda en la UI
 }
 
+export interface ProjectCategory {
+  category:
+  | "software"
+  | "product"
+  | "project-management"
+  | "event"
+  | "research"
+  | "community"
+  | "social-impact"
+  | "education"
+  | "other";
+}
+
 /**
  * Proyecto del portafolio
  * Implementa la estructura completa de "case study" profesional
@@ -55,8 +58,8 @@ export interface Project {
   problem: string;
   solution: string;
 
-  // Stack técnico
-  techStack: TechStack;
+  // Stack 
+  stack: ProjectStack;
 
   // Aspectos visuales
   images: {
@@ -81,9 +84,9 @@ export interface Project {
   // Metadatos
   featured: boolean;
   startDate: string; // ISO 8601
-  endDate?: string; // ISO 8601
+  endDate: string; // ISO 8601
   tags?: string[];
-  category?: "frontend" | "fullstack" | "backend" | "mobile" | "other";
+  category?: ProjectCategory;
   status?: "completed" | "in-progress" | "concept"; // para filtrar
 }
 

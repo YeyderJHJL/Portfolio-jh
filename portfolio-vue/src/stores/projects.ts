@@ -640,188 +640,283 @@ const MOCK_PROJECTS: Project[] = [
   },
 ];
 
-export type SortOption = 'latest' | 'oldest' | 'name-asc' | 'name-desc';
+// ============================================================
+// TYPES
+// ============================================================
 
-export const useProjectsStore = defineStore("projects", () => {
-  const projects = ref<Project[]>(MOCK_PROJECTS);
-  const loading = ref(false);
-  const error = ref<string | null>(null);
-  
-  const searchQuery = ref('');
-  const selectedStacks = ref<string[]>([]);
-  const sortBy = ref<SortOption>('latest');
+export type SortOption =
+  | 'latest'
+  | 'oldest'
+  | 'name-asc'
+  | 'name-desc'
+  | `year-${number}`;
 
-  const featuredProjects = computed(() => 
-    projects.value
-      .filter(p => p.featured)
-      .sort((a, b) => new Date(b.endDate).getTime() - new Date(a.endDate).getTime())
-      .slice(0, 3)
-  );
+// ============================================================
+// STORE
+// ============================================================
 
-  const getProjectStack = (project: Project): string[] => {
-    if (!project.stack) return [];
-    return Object.values(project.stack).flat();
-  };
-  
-  const allStackOptions = computed(() => {
-    const stackSet = new Set<string>();
+export const useProjectsStore = defineStore('projects', () => {
+  // STATE (source of truth)
+  const projects = ref<Project[]>(MOCK_PROJECTS)
+  const loading = ref(false)
+  const error = ref<string | null>(null)
+
+  // Filters state
+  const searchQuery = ref('')
+  const selectedStacks = ref<string[]>([])
+  const selectedCategory = ref<string | null>(null)
+  const sortBy = ref<SortOption>('latest')
+
+  // ============================================================
+  // HELPERS (pure functions, no reactive logic)
+  // ============================================================
+
+  /**
+   * Returns a flat, unique and sorted stack list for a project
+   */
+  const getStacksForProject = (project: Project): string[] => {
+    if (!project.stack) return []
+
+    return Array.from(
+      new Set(
+        Object.values(project.stack)
+          .flat()
+          .filter(Boolean)
+      )
+    ).sort()
+  }
+
+  const availableYears = computed<number[]>(() => {
+    const years = new Set<number>();
 
     projects.value.forEach(project => {
-      getProjectStack(project).forEach(item => {
-        stackSet.add(item);
-      });
+      if (project.endDate) {
+        years.add(new Date(project.endDate).getFullYear());
+      }
     });
 
-    return Array.from(stackSet).sort();
+    return Array.from(years).sort((a, b) => b - a); // más reciente primero
   });
 
-  const filteredProjects = computed(() => {
-    let results = [...projects.value];
+  // ============================================================
+  // COMPUTED — DOMAIN / BUSINESS
+  // ============================================================
 
-    // Search
+  /**
+   * Featured projects (used in Home)
+   */
+  const featuredProjects = computed(() =>
+    projects.value
+      .filter(p => p.featured)
+      .sort(
+        (a, b) =>
+          new Date(b.endDate).getTime() -
+          new Date(a.endDate).getTime()
+      )
+      .slice(0, 3)
+  )
+
+  /**
+   * All unique stack options across projects (for filters)
+   */
+  const allStackOptions = computed(() => {
+    const stackSet = new Set<string>()
+
+    projects.value.forEach(project => {
+      getStacksForProject(project).forEach(stack =>
+        stackSet.add(stack)
+      )
+    })
+
+    return Array.from(stackSet).sort()
+  })
+
+  /**
+   * Projects grouped by category
+   */
+  const projectsByCategory = computed(() => {
+    const map: Record<string, Project[]> = {}
+
+    projects.value.forEach(project => {
+      const key = project.category?.category ?? 'other'
+      if (!map[key]) map[key] = []
+      map[key].push(project)
+    })
+
+    return map
+  })
+
+  /**
+   * Get project by id
+   */
+  const projectById = computed(() => {
+    return (id: string) =>
+      projects.value.find(p => p.id === id)
+  })
+
+  const totalProjects = computed(() => projects.value.length)
+
+  // ============================================================
+  // COMPUTED — FILTERING & SORTING
+  // ============================================================
+
+  /**
+   * Projects after applying search, stack & category filters
+   */
+  const filteredProjects = computed(() => {
+    let results = [...projects.value]
+
+    // --- Search (title, descriptions, tags)
     if (searchQuery.value.trim()) {
-      const query = searchQuery.value.toLowerCase();
+      const query = searchQuery.value.toLowerCase()
+
       results = results.filter(project =>
         project.title.toLowerCase().includes(query) ||
         project.shortDescription.toLowerCase().includes(query) ||
-        project.fullDescription.toLowerCase().includes(query)
-      );
+        project.fullDescription.toLowerCase().includes(query) ||
+        project.tags?.some(tag =>
+          tag.toLowerCase().includes(query)
+        )
+      )
     }
 
-    // Stack filter
+    // --- Stack filter
     if (selectedStacks.value.length > 0) {
       results = results.filter(project => {
-        const projectStack = getProjectStack(project).map(i =>
-          i.toLowerCase()
-        );
+        const projectStacks = getStacksForProject(project).map(s =>
+          s.toLowerCase()
+        )
 
         return selectedStacks.value.every(selected =>
-          projectStack.includes(selected.toLowerCase())
-        );
-      });
+          projectStacks.includes(selected.toLowerCase())
+        )
+      })
     }
 
-    return results;
-  });
+    // --- Category filter
+    if (selectedCategory.value) {
+      results = results.filter(
+        project =>
+          project.category?.category ===
+          selectedCategory.value
+      )
+    }
 
+    return results
+  })
+
+  /**
+   * Final sorted result (used directly by UI)
+   */
   const sortedProjects = computed(() => {
-    const results = [...filteredProjects.value];
+    const results = [...filteredProjects.value]
+
+    if (sortBy.value.startsWith('year-')) {
+      const year = Number(sortBy.value.split('-')[1]);
+
+      return results
+        .filter(p => new Date(p.endDate).getFullYear() === year)
+        .sort(
+          (a, b) =>
+            new Date(b.endDate).getTime() -
+            new Date(a.endDate).getTime()
+        );
+    }
 
     switch (sortBy.value) {
       case 'latest':
-        return results.sort((a, b) => 
-          new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
-        );
+        return results.sort(
+          (a, b) =>
+            new Date(b.endDate).getTime() -
+            new Date(a.endDate).getTime()
+        )
+
       case 'oldest':
-        return results.sort((a, b) => 
-          new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
-        );
+        return results.sort(
+          (a, b) =>
+            new Date(a.endDate).getTime() -
+            new Date(b.endDate).getTime()
+        )
+
       case 'name-asc':
-        return results.sort((a, b) => a.title.localeCompare(b.title));
+        return results.sort((a, b) =>
+          a.title.localeCompare(b.title)
+        )
+
       case 'name-desc':
-        return results.sort((a, b) => b.title.localeCompare(a.title));
+        return results.sort((a, b) =>
+          b.title.localeCompare(a.title)
+        )
+
       default:
-        return results;
+        return results
     }
-  });
+  })
 
-  const projectById = computed(() => {
-    return (id: string) => projects.value.find(p => p.id === id);
-  });
-
-  const projectsByCategory = computed(() => {
-    const map: Record<string, Project[]> = {};
-
-    projects.value.forEach(project => {
-      const key = project.category?.category ?? "other";
-      if (!map[key]) map[key] = [];
-      map[key].push(project);
-    });
-
-    return map;
-  });
-
-  const totalProjects = computed(() => projects.value.length);
-  
-  const totalFilteredProjects = computed(() => filteredProjects.value.length);
+  // ============================================================
+  // ACTIONS — ASYNC / MUTATIONS
+  // ============================================================
 
   const fetchProjects = async (): Promise<void> => {
-    loading.value = true;
-    error.value = null;
+    loading.value = true
+    error.value = null
+
     try {
-      // Simula API call
-      await new Promise(resolve => setTimeout(resolve, 800));
+      // Simulated API call
+      await new Promise(resolve =>
+        setTimeout(resolve, 800)
+      )
     } catch (err) {
-      error.value = err instanceof Error ? err.message : "Error fetching projects";
-      console.error("Error fetching projects:", err);
+      error.value =
+        err instanceof Error
+          ? err.message
+          : 'Error fetching projects'
+      console.error(err)
     } finally {
-      loading.value = false;
+      loading.value = false
     }
-  };
+  }
 
-  const setSearchQuery = (query: string | undefined): void => {
-    searchQuery.value = query || '';
-  };
+  // ============================================================
+  // ACTIONS — FILTER SETTERS
+  // ============================================================
 
-  const setSelectedStacks = (stacks: string[] | undefined): void => {
-    selectedStacks.value = stacks || [];
-  };
+  const setSearchQuery = (query?: string): void => {
+    searchQuery.value = query || ''
+  }
 
-  const setSortBy = (sort: SortOption | undefined): void => {
-    sortBy.value = sort || 'latest';
-  };
+  const setSelectedStacks = (stacks?: string[]): void => {
+    selectedStacks.value = stacks || []
+  }
+
+  const setSelectedCategory = (
+    category?: string | null
+  ): void => {
+    selectedCategory.value = category || null
+  }
+
+  const setSortBy = (sort?: SortOption): void => {
+    sortBy.value = sort || 'latest'
+  }
 
   const clearFilters = (): void => {
-    searchQuery.value = '';
-    selectedStacks.value = [];
-    sortBy.value = 'latest';
-  };
+    searchQuery.value = ''
+    selectedStacks.value = []
+    selectedCategory.value = null
+    sortBy.value = 'latest'
+  }
 
-  const getStacksForProject = (project: Project): string[] => {
-  return [
-    ...(project.stack.technologies || []),
-    ...(project.stack.tools || []),
-    ...(project.stack.methodologies || []),
-    ...(project.stack.platforms || []),
-    ...(project.stack.domains || []),
-    ...(project.stack.skills || [])
-  ]
-}
+  // ============================================================
+  // ACTIONS — ERROR
+  // ============================================================
 
-  const addProject = (project: Project): void => {
-    if (!project.id || !project.title) {
-      error.value = "Project must have id and title";
-      return;
-    }
-    if (projects.value.some(p => p.id === project.id)) {
-      error.value = `Project with id ${project.id} already exists`;
-      return;
-    }
-    projects.value.push(project);
-    error.value = null;
-  };
+  const clearError = (): void => {
+    error.value = null
+  }
 
-  const updateProject = (id: string, updates: Partial<Project>): void => {
-    const index = projects.value.findIndex(p => p.id === id);
-    if (index === -1) {
-      error.value = `Project with id ${id} not found`;
-      return;
-    }
-    projects.value[index] = { ...projects.value[index], ...updates, id } as Project;
-    error.value = null;
-  };
-
-  const deleteProject = (id: string): void => {
-    const index = projects.value.findIndex(p => p.id === id);
-    if (index === -1) {
-      error.value = `Project with id ${id} not found`;
-      return;
-    }
-    projects.value.splice(index, 1);
-    error.value = null;
-  };
-
-  const clearError = (): void => { error.value = null; };
+  // ============================================================
+  // PUBLIC API
+  // ============================================================
 
   return {
     // State
@@ -830,25 +925,30 @@ export const useProjectsStore = defineStore("projects", () => {
     error,
     searchQuery,
     selectedStacks,
+    selectedCategory,
     sortBy,
-    
-    // Getters
+
+    // Domain
     featuredProjects,
+    projectsByCategory,
+    projectById,
+    totalProjects,
+    availableYears,
+
+    // Filters
     allStackOptions,
     filteredProjects,
     sortedProjects,
-    projectById,
-    projectsByCategory,
-    totalProjects,
-    totalFilteredProjects,
-    
+
     // Actions
     fetchProjects,
     setSearchQuery,
     setSelectedStacks,
+    setSelectedCategory,
     setSortBy,
     clearFilters,
     getStacksForProject,
     clearError,
-  };
-});
+  }
+})
+

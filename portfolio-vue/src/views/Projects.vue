@@ -1,125 +1,67 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useProjectsStore } from '../stores/projects'
+import { useProjectsStore, CATEGORY_LABELS } from '../stores/projects'
 import Button from 'primevue/button'
 import Select from 'primevue/select'
-import MultiSelect from 'primevue/multiselect'
 import TieredMenu from 'primevue/tieredmenu'
 import InputText from 'primevue/inputtext'
+import Checkbox from 'primevue/checkbox'
+import Popover from 'primevue/popover'
 
 // ---------------------------
-// ROUTER
+// SETUP
 // ---------------------------
 const router = useRouter()
-
-// ---------------------------
-// STORE
-// ---------------------------
 const projectsStore = useProjectsStore()
 
 // ---------------------------
-// LOCAL STATE (solo UI)
+// LOCAL STATE (UI only)
 // ---------------------------
 const currentPage = ref(1)
-const itemsPerPage = 12
+const itemsPerPage = 9
 const sortMenu = ref()
+const stackMenu = ref()
+const stackSearchQuery = ref('')
+const expandedCategory = ref<string | null>(null)
 
 // ---------------------------
-// COMPUTED - OPTIONS
+// COMPUTED - UI PRESENTATION
 // ---------------------------
 
-// Labels legibles para categorías
-const categoryLabels: Record<string, string> = {
-  'software': 'Software',
-  'product': 'Product',
-  'project-management': 'Project Management',
-  'event': 'Events',
-  'research': 'Research',
-  'community': 'Community',
-  'social-impact': 'Social Impact',
-  'education': 'Education',
-  'other': 'Other'
-}
-
-// Categorías únicas del store
-const categoryOptions = computed(() => {
-  const categories = new Set<string>()
-  projectsStore.projects.forEach(p => {
-    if (p.category?.category) categories.add(p.category.category)
-  })
-  return [
-    { label: 'All Types', value: null },
-    ...Array.from(categories).sort().map(cat => ({
-      label: categoryLabels[cat] || cat,
-      value: cat
-    }))
-  ]
-})
-
-// Stack agrupado por tipo
+/**
+ * Stack options filtered by search query
+ */
 const stackOptions = computed(() => {
-  const stackMap = {
-    technologies: new Set<string>(),
-    tools: new Set<string>(),
-    methodologies: new Set<string>(),
-    platforms: new Set<string>(),
-    domains: new Set<string>(),
-    skills: new Set<string>()
+  if (!stackSearchQuery.value.trim()) {
+    return projectsStore.stackOptionsGrouped
   }
 
-  projectsStore.projects.forEach(p => {
-    p.stack.technologies?.forEach(t => stackMap.technologies.add(t))
-    p.stack.tools?.forEach(t => stackMap.tools.add(t))
-    p.stack.methodologies?.forEach(m => stackMap.methodologies.add(m))
-    p.stack.platforms?.forEach(pl => stackMap.platforms.add(pl))
-    p.stack.domains?.forEach(d => stackMap.domains.add(d))
-    p.stack.skills?.forEach(s => stackMap.skills.add(s))
-  })
-
-  return [
-    { 
-      label: '💻 Technologies', 
-      code: 'tech',
-      items: Array.from(stackMap.technologies).sort().map(t => ({ label: t, value: t })) 
-    },
-    { 
-      label: '🛠️ Tools', 
-      code: 'tools',
-      items: Array.from(stackMap.tools).sort().map(t => ({ label: t, value: t })) 
-    },
-    { 
-      label: '📋 Methodologies', 
-      code: 'method',
-      items: Array.from(stackMap.methodologies).sort().map(m => ({ label: m, value: m })) 
-    },
-    { 
-      label: '☁️ Platforms', 
-      code: 'platform',
-      items: Array.from(stackMap.platforms).sort().map(p => ({ label: p, value: p })) 
-    },
-    { 
-      label: '🎯 Domains', 
-      code: 'domain',
-      items: Array.from(stackMap.domains).sort().map(d => ({ label: d, value: d })) 
-    },
-    { 
-      label: '⚡ Skills', 
-      code: 'skill',
-      items: Array.from(stackMap.skills).sort().map(s => ({ label: s, value: s })) 
-    }
-  ].filter(group => group.items.length > 0)
+  const query = stackSearchQuery.value.toLowerCase()
+  
+  return projectsStore.stackOptionsGrouped
+    .map(group => ({
+      ...group,
+      items: group.items.filter(item => 
+        item.toLowerCase().includes(query)
+      )
+    }))
+    .filter(group => group.items.length > 0)
 })
 
-// Menú de ordenamiento
+/**
+ * Sort menu items structure
+ */
 const sortMenuItems = computed(() => {
   const yearItems = projectsStore.availableYears.map(year => ({
     label: String(year),
-    icon: 'pi pi-calendar',
     command: () => {
       projectsStore.setSortBy(`year-${year}`)
     }
   }))
+
+  console.log('Available Years:', projectsStore.availableYears) // Debug
+  console.log('Year Items:', yearItems) // Debug
 
   return [
     {
@@ -132,9 +74,7 @@ const sortMenuItems = computed(() => {
       icon: 'pi pi-arrow-up',
       command: () => projectsStore.setSortBy('oldest')
     },
-    {
-      separator: true
-    },
+    { separator: true },
     {
       label: 'Name A-Z',
       icon: 'pi pi-sort-alpha-down',
@@ -146,9 +86,7 @@ const sortMenuItems = computed(() => {
       command: () => projectsStore.setSortBy('name-desc')
     },
     ...(yearItems.length > 0 ? [
-      {
-        separator: true
-      },
+      { separator: true },
       {
         label: 'By Year',
         icon: 'pi pi-calendar',
@@ -158,11 +96,12 @@ const sortMenuItems = computed(() => {
   ]
 })
 
-// Label actual del sort
+/**
+ * Current sort label for button display
+ */
 const currentSortLabel = computed(() => {
   if (projectsStore.sortBy.startsWith('year-')) {
-    const year = projectsStore.sortBy.split('-')[1]
-    return year
+    return projectsStore.sortBy.split('-')[1]
   }
   
   const labels: Record<string, string> = {
@@ -175,19 +114,25 @@ const currentSortLabel = computed(() => {
   return labels[projectsStore.sortBy] || 'Sort'
 })
 
-// ---------------------------
-// COMPUTED - PAGINACIÓN
-// ---------------------------
+/**
+ * Paginated projects for current page
+ */
 const paginatedProjects = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage
   const end = start + itemsPerPage
   return projectsStore.sortedProjects.slice(start, end)
 })
 
+/**
+ * Total pages for pagination
+ */
 const totalPages = computed(() =>
   Math.ceil(projectsStore.sortedProjects.length / itemsPerPage)
 )
 
+/**
+ * Check if any filters are active
+ */
 const hasActiveFilters = computed(() => 
   projectsStore.searchQuery !== '' || 
   projectsStore.selectedStacks.length > 0 ||
@@ -196,9 +141,49 @@ const hasActiveFilters = computed(() =>
 )
 
 // ---------------------------
-// METHODS
+// METHODS - Stack Filter
 // ---------------------------
-const goToProject = (id: string) => router.push(`/projects/${id}`)
+
+const toggleStackMenu = (event: Event) => {
+  stackMenu.value.toggle(event)
+}
+
+const toggleCategory = (code: string) => {
+  expandedCategory.value = expandedCategory.value === code ? null : code
+}
+
+const toggleStackItem = (item: string) => {
+  const currentStacks = [...projectsStore.selectedStacks]
+  const index = currentStacks.indexOf(item)
+  
+  if (index > -1) {
+    currentStacks.splice(index, 1)
+  } else {
+    currentStacks.push(item)
+  }
+  
+  projectsStore.setSelectedStacks(currentStacks)
+}
+
+const isStackItemSelected = (item: string) => {
+  return projectsStore.selectedStacks.includes(item)
+}
+
+const toggleSelectAll = () => {
+  if (projectsStore.selectedStacks.length === projectsStore.allStackItems.length) {
+    projectsStore.setSelectedStacks([])
+  } else {
+    projectsStore.setSelectedStacks([...projectsStore.allStackItems])
+  }
+}
+
+// ---------------------------
+// METHODS - Navigation
+// ---------------------------
+
+const goToProject = (id: string) => {
+  router.push(`/projects/${id}`)
+}
 
 const changePage = (page: number) => {
   currentPage.value = page
@@ -208,6 +193,8 @@ const changePage = (page: number) => {
 const handleClearFilters = () => {
   projectsStore.clearFilters()
   currentPage.value = 1
+  stackSearchQuery.value = ''
+  expandedCategory.value = null
 }
 
 const toggleSortMenu = (event: Event) => {
@@ -217,6 +204,7 @@ const toggleSortMenu = (event: Event) => {
 // ---------------------------
 // LIFECYCLE
 // ---------------------------
+
 onMounted(() => {
   projectsStore.fetchProjects()
 })
@@ -229,7 +217,7 @@ onMounted(() => {
         HEADER
     =========================== -->
     <header class="text-center space-y-3">
-      <h1 class="text-4xl md:text-5xl font-bold">
+      <h1 class="text-4xl md:text-5xl font-bold text-text-light-primary dark:text-text-dark-primary">
         My Projects
       </h1>
       <p class="text-lg md:text-xl text-text-light-secondary dark:text-text-dark-secondary max-w-2xl mx-auto">
@@ -240,7 +228,7 @@ onMounted(() => {
     <!-- ==========================
         FILTERS SECTION
     =========================== -->
-    <section class="space-y-6">
+    <section class="space-y-2">
       
       <!-- Filter Container -->
       <div class="bg-primary-400 dark:bg-primary-800 p-1 shadow-lg">
@@ -250,8 +238,14 @@ onMounted(() => {
           
           <!-- 1. Search -->
           <div class="relative lg:col-span-7">
-            <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-text-light-muted dark:text-text-dark-muted z-10 text-lg"></i>
-            <div class="w-full h-12 pl-12 pr-4 rounded-xl bg-primary-500 dark:bg-primary-900 border-2 border-transparent hover:border-accent-700 dark:hover:border-accent-600 focus-within:border-accent-700 dark:focus-within:border-accent-600 focus-within:ring-4 focus-within:ring-accent-700/10 dark:focus-within:ring-accent-600/10 transition-all duration-200 flex items-center">
+            <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 
+                    text-text-light-muted dark:text-text-dark-muted 
+                    z-10 text-lg"></i>
+            <div class="w-full h-12 pl-12 pr-4 rounded-xl 
+                      bg-primary-500 dark:bg-primary-900 
+                      border border-transparent 
+                      focus-within:border-accent-700 dark:focus-within:border-accent-600 
+                      transition-all duration-200 flex items-center">
               <InputText
                 v-model="projectsStore.searchQuery"
                 placeholder="Search projects, tags..."
@@ -263,88 +257,171 @@ onMounted(() => {
 
           <!-- 2. Category -->
           <div class="lg:col-span-2">
-            <div class="relative w-full h-12 px-4 rounded-xl bg-primary-500 dark:bg-primary-900 border-2 border-transparent hover:border-accent-700 dark:hover:border-accent-600 transition-all duration-200 flex items-center cursor-pointer">
-              <Select
-                v-model="projectsStore.selectedCategory"
-                :options="categoryOptions"
-                optionLabel="label"
-                optionValue="value"
-                placeholder="Type"
-                class="w-full"
-                unstyled
-                :pt="{
-                  root: { class: 'w-full flex items-center gap-2' },
-                  label: { class: 'flex-1 bg-transparent text-text-light-primary dark:text-text-dark-primary placeholder:text-text-light-muted dark:placeholder:text-text-dark-muted cursor-pointer outline-none border-none text-base truncate' },
-                  dropdownIcon: { class: 'pi pi-chevron-down text-text-light-muted dark:text-text-dark-muted text-sm' },
-                  panel: { class: 'mt-2 rounded-xl bg-primary-400 dark:bg-primary-800 border-2 border-primary-300 dark:border-primary-700 shadow-xl p-2 min-w-full' },
-                  list: { class: 'space-y-1 bg-primary-400 dark:bg-primary-800 p-1' },
-                  option: { class: 'px-4 py-1 rounded-lg text-text-light-primary dark:text-text-dark-primary hover:bg-primary-300 dark:hover:bg-primary-700 cursor-pointer transition-all font-medium' }
-                }"
-              />
-            </div>
+            <Select
+              v-model="projectsStore.selectedCategory"
+              :options="projectsStore.categoryOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Type"
+              class="w-full h-12"
+              unstyled
+              :pt="{
+                root: { class: 'w-full h-12 px-4 rounded-xl bg-primary-500 dark:bg-primary-900 border border-transparent hover:border-accent-700 dark:hover:border-accent-600 transition-all duration-200 flex items-center cursor-pointer' },
+                label: { class: 'flex-1 bg-transparent text-text-light-primary dark:text-text-dark-primary text-base truncate' },
+                dropdownIcon: { class: 'pi pi-chevron-down text-text-light-muted dark:text-text-dark-muted text-sm ml-2' },
+                overlay: { class: 'mt-2 bg-primary-400 dark:bg-primary-800 border-2 border-primary-300 dark:border-primary-700 shadow-xl' },
+                list: { class: 'p-2 space-y-1' },
+                option: { class: 'px-4 py-2.5 rounded-lg text-text-light-primary dark:text-text-dark-primary hover:bg-primary-300 dark:hover:bg-primary-700 cursor-pointer transition-all font-medium' }
+              }"
+            />
           </div>
 
-          <!-- 3. Stack -->
-<!-- 3. Stack -->
-<div class="lg:col-span-2">
-  <div class="relative w-full h-12 px-4 rounded-xl bg-primary-500 dark:bg-primary-900 border-2 border-transparent hover:border-accent-700 dark:hover:border-accent-600 transition-all duration-200 flex items-center cursor-pointer">
-    <MultiSelect
-      v-model="projectsStore.selectedStacks"
-      :options="stackOptions"
-      optionLabel="label"
-      optionValue="value"
-      optionGroupLabel="label"
-      :optionGroupChildren="'items'"
-      placeholder="Stack"
-      :filter="true"
-      display="chip"
-      :maxSelectedLabels="1"
-      class="w-full"
-      unstyled
-      :pt="{
-        root: { class: 'w-full flex items-center gap-2' },
-        labelContainer: { class: 'flex-1 flex items-center gap-2 overflow-hidden' },
-        label: { class: 'bg-transparent text-text-light-primary dark:text-text-dark-primary placeholder:text-text-light-muted dark:placeholder:text-text-dark-muted cursor-pointer outline-none border-none text-base truncate' },
-        pcChip: { class: 'px-2 py-1 rounded-lg bg-accent-700 text-white text-xs font-medium' },
-        dropdownIcon: { class: 'pi pi-chevron-down text-text-light-muted dark:text-text-dark-muted text-sm flex-shrink-0' },
-        overlay: { class: 'mt-2 rounded-xl bg-primary-400 dark:bg-primary-800 border-2 border-primary-300 dark:border-primary-700 shadow-xl overflow-hidden' },
-        header: { class: 'flex items-center gap-3 p-3 bg-primary-400 dark:bg-primary-800 border-b-2 border-primary-300 dark:border-primary-700' },
-        pcHeaderCheckbox: { class: 'w-5 h-5 rounded border-2 border-primary-300 dark:border-primary-700 flex items-center justify-center flex-shrink-0 cursor-pointer hover:border-accent-700 dark:hover:border-accent-600 transition-colors' },
-        pcFilterContainer: { class: 'relative flex-1' },
-        filterIcon: { class: 'pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-text-light-muted dark:text-text-dark-muted text-sm' },
-        pcFilter: { class: 'w-full pl-10 pr-4 py-2 rounded-lg bg-primary-500 dark:bg-primary-900 text-text-light-primary dark:text-text-dark-primary border-2 border-transparent focus:border-accent-700 dark:focus:border-accent-600 outline-none placeholder:text-text-light-muted dark:placeholder:text-text-dark-muted text-sm transition-all' },
-        listContainer: { class: 'overflow-y-auto max-h-72' },
-        list: { class: 'p-2 space-y-1 bg-primary-400 dark:bg-primary-800' },
-        optionGroup: { class: 'px-4 py-2.5 font-bold text-sm text-text-light-primary dark:text-text-dark-primary bg-primary-300 dark:bg-primary-900 rounded-lg my-1 sticky top-0 z-10' },
-        option: { class: 'px-6 py-2.5 rounded-lg text-text-light-primary dark:text-text-dark-primary hover:bg-primary-300 dark:hover:bg-primary-700 cursor-pointer transition-all text-sm flex items-center gap-3' },
-        pcOptionCheckbox: { class: 'w-5 h-5 rounded border-2 border-primary-300 dark:border-primary-700 flex items-center justify-center flex-shrink-0' }
-      }"
-    />
-  </div>
-</div>
-
-          <!-- 4. Sort (xl:col-span-1) -->
-          <div class="xl:col-span-1
-                      w-full h-12 rounded-xl
-                      bg-primary-500 dark:bg-primary-900
-                      text-text-light-primary dark:text-text-dark-primary
-                      transition-all duration-200
-                      justify-center gap-2
-                      text-base
-                      shadow-none
-                      flex items-center
-                    ">
+          <!-- 3. Stack (Custom Nested Menu) -->
+          <div class="lg:col-span-2 relative">
             <Button
-              :label="currentSortLabel"
-              @click="toggleSortMenu"
-              text
-            />
-            <TieredMenu
-              ref="sortMenu"
-              :model="sortMenuItems"
-              popup
-            />
+              @click="toggleStackMenu"
+              class="w-full h-12 px-4 rounded-xl 
+                    bg-primary-500 dark:bg-primary-900 
+                    border border-transparent hover:border-accent-700 dark:hover:border-accent-600 
+                    transition-all duration-200 flex items-center justify-between gap-2 
+                    text-text-light-primary dark:text-text-dark-primary"
+              unstyled
+            >
+              <span class="text-base truncate">
+                {{ projectsStore.selectedStacks.length > 0 ? `Stack (${projectsStore.selectedStacks.length})` : 'Stack' }}
+              </span>
+              <i class="pi pi-chevron-down 
+                      text-text-light-muted dark:text-text-dark-muted 
+                      text-sm"></i>
+            </Button>
+
+            <!-- Custom Stack Menu Overlay -->
+            <Popover
+              ref="stackMenu"
+              :pt="{
+                root: { class: 'min-w-56 rounded-xl bg-primary-400 dark:bg-primary-800 border-2 border-primary-300 dark:border-primary-700 shadow-xl overflow-hidden' },
+                content: { class: 'p-0' }
+              }"
+            >
+              <!-- Header: Select All + Search -->
+              <div class="flex items-center gap-3 p-3 border-b-2 
+                        border-primary-300 dark:border-primary-700 
+                        bg-primary-400 dark:bg-primary-800">
+                <div class="flex items-center gap-2 cursor-pointer" @click="toggleSelectAll">
+                  <Checkbox
+                    :modelValue="projectsStore.selectedStacks.length === projectsStore.allStackItems.length && projectsStore.allStackItems.length > 0"
+                    :binary="true"
+                    inputId="selectAll"
+                    class="w-5 h-5"
+                    unstyled
+                    :pt="{
+                      root: { class: 'w-5 h-5 rounded border-2 border-primary-300 dark:border-primary-700 flex items-center justify-center bg-primary-500 dark:bg-primary-900 cursor-pointer hover:border-accent-700 dark:hover:border-accent-600 transition-colors' },
+                      input: { class: 'hidden' },
+                      box: { class: 'w-5 h-5 rounded flex items-center justify-center' },
+                      icon: { class: 'text-accent-700 dark:text-accent-600 text-sm' }
+                    }"
+                  />
+                </div>
+                
+                <div class="relative flex-1">
+                  <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 
+                          text-text-light-muted dark:text-text-dark-muted 
+                          text-sm"></i>
+                  <InputText
+                    v-model="stackSearchQuery"
+                    placeholder="Search..."
+                    class="w-full pl-10 pr-4 py-2 rounded-lg 
+                          bg-primary-500 dark:bg-primary-900 
+                          text-text-light-primary dark:text-text-dark-primary 
+                          border border-transparent focus:border-accent-700 dark:focus:border-accent-600 
+                          outline-none placeholder:text-text-light-muted dark:placeholder:text-text-dark-muted 
+                          text-sm"
+                    unstyled
+                  />
+                </div>
+              </div>
+
+              <!-- Categories and Items -->
+              <div class="max-h-96 overflow-y-auto p-2 
+                        bg-primary-400 dark:bg-primary-800">
+                <div v-if="stackOptions.length === 0" class="px-4 py-8 text-center 
+                                                            text-text-light-muted dark:text-text-dark-muted">
+                  No results found
+                </div>
+                
+                <div v-for="group in stackOptions" :key="group.code" class="mb-1">
+                  <!-- Category Header (clickeable para expandir) -->
+                  <div 
+                    @click="toggleCategory(group.code)"
+                    class="px-4 py-2.5 font-bold text-sm text-text-light-primary dark:text-text-dark-primary bg-primary-300 dark:bg-primary-900 rounded-lg cursor-pointer hover:bg-primary-200 dark:hover:bg-primary-800 transition-all flex items-center justify-between"
+                  >
+                    <span>{{ group.label }}</span>
+                    <i :class="expandedCategory === group.code ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" class="text-xs text-text-light-muted dark:text-text-dark-muted"></i>
+                  </div>
+                  
+                  <!-- Items (solo se muestran si la categoría está expandida) -->
+                  <div v-if="expandedCategory === group.code" class="mt-1 space-y-0.5">
+                    <div
+                      v-for="item in group.items"
+                      :key="item"
+                      @click="toggleStackItem(item)"
+                      class="px-6 py-2.5 rounded-lg hover:bg-primary-300 dark:hover:bg-primary-700 cursor-pointer transition-all flex items-center gap-3"
+                    >
+                      <Checkbox
+                        :modelValue="isStackItemSelected(item)"
+                        :binary="true"
+                        class="w-5 h-5"
+                        unstyled
+                        :pt="{
+                          root: { class: 'w-5 h-5 rounded border-2 border-primary-300 dark:border-primary-700 flex items-center justify-center bg-primary-500 dark:bg-primary-900 cursor-pointer hover:border-accent-700 dark:hover:border-accent-600 transition-colors' },
+                          input: { class: 'hidden' },
+                          box: { class: 'w-5 h-5 rounded flex items-center justify-center' },
+                          icon: { class: 'text-accent-700 dark:text-accent-600 text-sm' }
+                        }"
+                      />
+                      <span class="text-sm text-text-light-primary dark:text-text-dark-primary">{{ item }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Popover>
           </div>
+
+          <!-- 4. Sort -->
+          <div class="lg:col-span-1">
+  <Button
+    @click="toggleSortMenu"
+    class="w-full h-12 px-4 rounded-xl 
+          bg-primary-500 dark:bg-primary-900 
+          border border-transparent 
+          hover:border-accent-700 dark:hover:border-accent-600 
+          transition-all duration-200 
+          flex items-center justify-between gap-2 
+          text-text-light-primary dark:text-text-dark-primary"
+    unstyled
+  >
+    <span class="text-base truncate">{{ currentSortLabel }}</span>
+    <i class="pi pi-chevron-down text-text-light-muted dark:text-text-dark-muted text-sm"></i>
+  </Button>
+
+  <TieredMenu
+  ref="sortMenu"
+  :model="sortMenuItems"
+  popup
+  unstyled
+  :pt="{
+    root: { class: 'min-w-56 bg-primary-400 dark:bg-primary-800 border-2 border-primary-300 dark:border-primary-700 shadow-xl overflow-visible' },
+    rootList: { class: 'p-2 flex-col' },
+    item: { class: 'my-0.5 relative w-full' },
+    itemContent: { class: 'px-4 py-2.5 rounded-lg text-text-light-primary dark:text-text-dark-primary hover:bg-primary-300 dark:hover:bg-primary-700 cursor-pointer transition-all flex items-center gap-3 text-sm font-medium w-full' },
+    itemLink: { class: 'w-full flex items-center gap-3 no-underline' },
+    itemIcon: { class: 'text-accent-700 dark:text-accent-600 w-4 h-4 flex-shrink-0' },
+    itemLabel: { class: 'flex-1 text-text-light-primary dark:text-text-dark-primary' },
+    separator: { class: 'my-2 border-t-2 border-primary-300 dark:border-primary-700' },
+    submenu: { class: 'p-2 flex-col absolute left-full top-0  min-w-32 bg-primary-500 dark:bg-primary-900 border-2 border-primary-300 dark:border-primary-700 shadow-xl overflow-visible'},
+  }"
+/>
+</div>
         </div>
       </div>
 
@@ -369,7 +446,7 @@ onMounted(() => {
           v-if="projectsStore.selectedCategory" 
           class="px-4 py-2 rounded-full bg-accent-200 dark:bg-accent-900 text-text-light-primary dark:text-text-dark-primary text-sm font-medium shadow-sm"
         >
-          {{ categoryLabels[projectsStore.selectedCategory] }}
+          {{ CATEGORY_LABELS[projectsStore.selectedCategory] }}
         </span>
 
         <span 
@@ -410,14 +487,14 @@ onMounted(() => {
     <!-- ==========================
         LOADING SKELETON
     =========================== -->
-    <div v-if="projectsStore.loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div v-if="projectsStore.loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       <div
         v-for="n in 6"
         :key="n"
         class="bg-primary-400 dark:bg-primary-800 rounded-2xl overflow-hidden shadow-lg animate-pulse"
       >
-        <div class="w-full h-48 bg-primary-300 dark:bg-primary-700"></div>
-        <div class="p-6 space-y-3">
+        <div class="w-full h-56 bg-primary-300 dark:bg-primary-700"></div>
+        <div class="p-6 space-y-4">
           <div class="h-6 bg-primary-300 dark:bg-primary-700 rounded w-3/4"></div>
           <div class="h-4 bg-primary-300 dark:bg-primary-700 rounded w-full"></div>
           <div class="h-4 bg-primary-300 dark:bg-primary-700 rounded w-5/6"></div>
@@ -430,50 +507,53 @@ onMounted(() => {
     =========================== -->
     <div
       v-else-if="projectsStore.sortedProjects.length === 0"
-      class="flex flex-col items-center justify-center py-20 text-center"
+      class="flex flex-col items-center justify-center py-24 text-center"
     >
-      <div class="w-24 h-24 rounded-full bg-primary-300 dark:bg-primary-700 flex items-center justify-center mb-6">
-        <i class="pi pi-inbox text-5xl text-text-light-muted dark:text-text-dark-muted"></i>
+      <div class="w-32 h-32 rounded-full bg-primary-300 dark:bg-primary-700 flex items-center justify-center mb-8 shadow-lg">
+        <i class="pi pi-inbox text-6xl text-text-light-muted dark:text-text-dark-muted"></i>
       </div>
-      <h3 class="text-2xl font-semibold mb-2">
+      <h3 class="text-3xl font-bold mb-3 text-text-light-primary dark:text-text-dark-primary">
         No projects found
       </h3>
-      <p class="text-text-light-secondary dark:text-text-dark-secondary mb-6 max-w-md">
-        Try adjusting your filters or search terms
+      <p class="text-lg text-text-light-secondary dark:text-text-dark-secondary mb-8 max-w-md leading-relaxed">
+        Try adjusting your filters or search terms to discover more projects
       </p>
       <Button
-        label="Clear Filters"
+        label="Clear All Filters"
         icon="pi pi-filter-slash"
         @click="handleClearFilters"
-        class="px-6 py-3 bg-accent-700 hover:bg-accent-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
+        class="px-8 py-4 bg-accent-700 hover:bg-accent-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all text-lg"
+        unstyled
       />
     </div>
 
     <!-- ==========================
         PROJECTS GRID
     =========================== -->
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       <article
-        v-for="project in paginatedProjects"
+        v-for="(project, index) in paginatedProjects"
         :key="project.id"
         @click="goToProject(project.id)"
         class="bg-primary-400 dark:bg-primary-800 rounded-2xl overflow-hidden shadow-lg
-              transform hover:scale-[1.02] hover:shadow-2xl
+              hover:-translate-y-2 hover:shadow-2xl
               transition-all duration-300 cursor-pointer group"
+        :style="{ animationDelay: `${index * 0.1}s` }"
       >
         <!-- Image -->
         <div class="relative w-full aspect-video overflow-hidden bg-primary-300 dark:bg-primary-700">
           <img
             :src="project.images.thumbnail"
             :alt="project.title"
+            loading="lazy"
             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
           />
-          <div class="absolute inset-0 bg-linear-to-t from-primary-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div class="absolute inset-0 bg-linear-to-t from-primary-900/80 via-primary-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           
           <!-- Category Badge -->
           <div class="absolute top-3 left-3">
             <span class="px-3 py-1.5 rounded-full bg-accent-700 text-white text-xs font-bold shadow-lg backdrop-blur-sm">
-              {{ categoryLabels[project.category?.category || 'other'] }}
+              {{ CATEGORY_LABELS[project.category?.category || 'other'] }}
             </span>
           </div>
 
@@ -487,41 +567,41 @@ onMounted(() => {
         </div>
 
         <!-- Content -->
-        <div class="p-6">
-          <h3 class="text-xl font-bold mb-2 group-hover:text-accent-700 dark:group-hover:text-accent-600 transition-colors line-clamp-1">
+        <div class="p-6 space-y-4">
+          <h3 class="text-xl font-bold text-text-light-primary dark:text-text-dark-primary group-hover:text-accent-700 dark:group-hover:text-accent-600 transition-colors line-clamp-1">
             {{ project.title }}
           </h3>
 
-          <p class="text-text-light-secondary dark:text-text-dark-secondary mb-4 line-clamp-2 text-sm">
+          <p class="text-text-light-secondary dark:text-text-dark-secondary line-clamp-2 text-sm leading-relaxed">
             {{ project.shortDescription }}
           </p>
 
-          <!-- Badges -->
-          <div class="flex flex-wrap gap-2 mb-4">
+          <!-- Tech Badges -->
+          <div class="flex flex-wrap gap-2">
             <span
-              v-for="item in [...(project.stack.domains || []), ...(project.stack.skills || [])].slice(0, 3)"
-              :key="item"
-              class="px-2.5 py-1 rounded-lg bg-accent-200 dark:bg-accent-900 text-xs font-semibold"
+              v-for="stack in projectsStore.getStacksForProject(project).slice(0, 4)"
+              :key="stack"
+              class="px-2 py-1 rounded bg-accent-200 dark:bg-primary-700 text-xs font-medium"
             >
-              {{ item }}
+              {{ stack }}
             </span>
             <span
-              v-if="[...(project.stack.domains || []), ...(project.stack.skills || [])].length > 3"
-              class="px-2.5 py-1 rounded-lg bg-primary-300 dark:bg-primary-700 text-text-light-muted dark:text-text-dark-muted text-xs font-semibold"
+              v-if="projectsStore.getStacksForProject(project).length > 4"
+              class="px-2 py-1 rounded bg-primary-300 dark:bg-primary-700 text-text-light-muted dark:text-text-dark-muted text-xs font-medium"
             >
-              +{{ [...(project.stack.domains || []), ...(project.stack.skills || [])].length - 3 }}
+              +{{ projectsStore.getStacksForProject(project).length - 4 }}
             </span>
           </div>
 
           <!-- Links -->
-          <div class="flex gap-3" @click.stop>
-            
-            <a v-for="link in project.links"
+          <div v-if="project.links && project.links.length > 0" class="flex gap-3 pt-2" @click.stop>
+            <a 
+              v-for="link in project.links.slice(0, 2)"
               :key="link.url"
               :href="link.url"
               target="_blank"
               rel="noopener noreferrer"
-              class="text-accent-700 hover:text-accent-600 dark:hover:text-accent-500 font-semibold text-sm flex items-center gap-1.5 transition-colors"
+              class="text-accent-700 hover:text-accent-600 font-semibold text-sm"
             >
               <i :class="link.icon === 'external-link' ? 'pi pi-external-link' : 'pi pi-github'"></i>
               {{ link.label }}
@@ -542,9 +622,8 @@ onMounted(() => {
         icon="pi pi-chevron-left"
         :disabled="currentPage === 1"
         @click="changePage(currentPage - 1)"
-        rounded
-        text
-        class="w-10 h-10 disabled:opacity-30"
+        class="w-12 h-12 rounded-full bg-primary-400 dark:bg-primary-800 hover:bg-primary-300 dark:hover:bg-primary-700 text-text-light-primary dark:text-text-dark-primary disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center shadow-sm"
+        unstyled
       />
 
       <Button
@@ -552,20 +631,21 @@ onMounted(() => {
         :key="page"
         :label="String(page)"
         @click="changePage(page)"
-        rounded
-        :text="page !== currentPage"
-        :class="page === currentPage 
-          ? 'bg-accent-700 text-white w-10 h-10' 
-          : 'w-10 h-10'"
+        :class="[
+          'w-12 h-12 rounded-full font-semibold transition-all duration-200 flex items-center justify-center shadow-sm',
+          page === currentPage 
+            ? 'bg-accent-700 text-white scale-110 shadow-lg' 
+            : 'bg-primary-400 dark:bg-primary-800 hover:bg-primary-300 dark:hover:bg-primary-700 text-text-light-primary dark:text-text-dark-primary'
+        ]"
+        unstyled
       />
 
       <Button
         icon="pi pi-chevron-right"
         :disabled="currentPage === totalPages"
         @click="changePage(currentPage + 1)"
-        rounded
-        text
-        class="w-10 h-10 disabled:opacity-30"
+        class="w-12 h-12 rounded-full bg-primary-400 dark:bg-primary-800 hover:bg-primary-300 dark:hover:bg-primary-700 text-text-light-primary dark:text-text-dark-primary disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center shadow-sm"
+        unstyled
       />
     </div>
 

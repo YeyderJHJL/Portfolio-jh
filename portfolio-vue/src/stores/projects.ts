@@ -25,9 +25,9 @@ const MOCK_PROJECTS: Project[] = [
       skills: ["Coordination", "Mentoring"],
     },
     images: {
-      thumbnail: "https://via.placeholder.com/400x300?text=BioForecast",
-      hero: "https://via.placeholder.com/1200x600?text=BioForecast",
-      screenshots: ["https://via.placeholder.com/800x400?text=Screenshot+1"],
+      thumbnail: "https://media.slidesgo.com/storage/23503025/responsive-images/0-hackathon-project-proposal___media_library_original_1600_900.jpg",
+      hero: "https://media.slidesgo.com/storage/23503025/responsive-images/0-hackathon-project-proposal___media_library_original_1600_900.jpg",
+      screenshots: ["https://media.slidesgo.com/storage/23503025/responsive-images/0-hackathon-project-proposal___media_library_original_1600_900.jpg"],
     },
     challenges: [
       {
@@ -640,23 +640,38 @@ const MOCK_PROJECTS: Project[] = [
   },
 ];
 
-// ============================================================
-// TYPES
-// ============================================================
-
 export type SortOption =
   | 'latest'
   | 'oldest'
   | 'name-asc'
   | 'name-desc'
-  | `year-${number}`;
+  | `year-${number}`
+
+// ============================================================
+// CONSTANTS
+// ============================================================
+
+export const CATEGORY_LABELS: Record<string, string> = {
+  'software': 'Software',
+  'product': 'Product',
+  'project-management': 'Project Management',
+  'event': 'Events',
+  'research': 'Research',
+  'community': 'Community',
+  'social-impact': 'Social Impact',
+  'education': 'Education',
+  'other': 'Other'
+}
 
 // ============================================================
 // STORE
 // ============================================================
 
 export const useProjectsStore = defineStore('projects', () => {
-  // STATE (source of truth)
+  // ============================================================
+  // STATE
+  // ============================================================
+  
   const projects = ref<Project[]>(MOCK_PROJECTS)
   const loading = ref(false)
   const error = ref<string | null>(null)
@@ -668,7 +683,7 @@ export const useProjectsStore = defineStore('projects', () => {
   const sortBy = ref<SortOption>('latest')
 
   // ============================================================
-  // HELPERS (pure functions, no reactive logic)
+  // HELPERS
   // ============================================================
 
   /**
@@ -686,21 +701,11 @@ export const useProjectsStore = defineStore('projects', () => {
     ).sort()
   }
 
-  const availableYears = computed<number[]>(() => {
-    const years = new Set<number>();
-
-    projects.value.forEach(project => {
-      if (project.endDate) {
-        years.add(new Date(project.endDate).getFullYear());
-      }
-    });
-
-    return Array.from(years).sort((a, b) => b - a); // más reciente primero
-  });
-
   // ============================================================
-  // COMPUTED — DOMAIN / BUSINESS
+  // COMPUTED — BASIC DATA
   // ============================================================
+
+  const totalProjects = computed(() => projects.value.length)
 
   /**
    * Featured projects (used in Home)
@@ -717,18 +722,11 @@ export const useProjectsStore = defineStore('projects', () => {
   )
 
   /**
-   * All unique stack options across projects (for filters)
+   * Get project by id
    */
-  const allStackOptions = computed(() => {
-    const stackSet = new Set<string>()
-
-    projects.value.forEach(project => {
-      getStacksForProject(project).forEach(stack =>
-        stackSet.add(stack)
-      )
-    })
-
-    return Array.from(stackSet).sort()
+  const projectById = computed(() => {
+    return (id: string) =>
+      projects.value.find(p => p.id === id)
   })
 
   /**
@@ -746,15 +744,121 @@ export const useProjectsStore = defineStore('projects', () => {
     return map
   })
 
+  // ============================================================
+  // COMPUTED — FILTER OPTIONS
+  // ============================================================
+
   /**
-   * Get project by id
+   * Available years from projects (for Year filter)
    */
-  const projectById = computed(() => {
-    return (id: string) =>
-      projects.value.find(p => p.id === id)
+  const availableYears = computed<number[]>(() => {
+    const years = new Set<number>()
+
+    projects.value.forEach(project => {
+      if (project.endDate) {
+        years.add(new Date(project.endDate).getFullYear())
+      }
+    })
+
+    return Array.from(years).sort((a, b) => b - a)
   })
 
-  const totalProjects = computed(() => projects.value.length)
+  /**
+   * Available categories with labels (for Category filter)
+   */
+  const categoryOptions = computed(() => {
+    const categories = new Set<string>()
+    
+    projects.value.forEach(p => {
+      if (p.category?.category) categories.add(p.category.category)
+    })
+    
+    return [
+      { label: 'All Types', value: null },
+      ...Array.from(categories).sort().map(cat => ({
+        label: CATEGORY_LABELS[cat] || cat,
+        value: cat
+      }))
+    ]
+  })
+
+  /**
+   * Stack options grouped by type (for Stack filter)
+   */
+  const stackOptionsGrouped = computed(() => {
+    const stackMap = {
+      technologies: new Set<string>(),
+      tools: new Set<string>(),
+      methodologies: new Set<string>(),
+      platforms: new Set<string>(),
+      domains: new Set<string>(),
+      skills: new Set<string>()
+    }
+
+    projects.value.forEach(p => {
+      p.stack.technologies?.forEach(t => stackMap.technologies.add(t))
+      p.stack.tools?.forEach(t => stackMap.tools.add(t))
+      p.stack.methodologies?.forEach(m => stackMap.methodologies.add(m))
+      p.stack.platforms?.forEach(pl => stackMap.platforms.add(pl))
+      p.stack.domains?.forEach(d => stackMap.domains.add(d))
+      p.stack.skills?.forEach(s => stackMap.skills.add(s))
+    })
+
+    return [
+      { 
+        label: 'Technologies', 
+        code: 'tech',
+        items: Array.from(stackMap.technologies).sort()
+      },
+      { 
+        label: 'Tools', 
+        code: 'tools',
+        items: Array.from(stackMap.tools).sort()
+      },
+      { 
+        label: 'Methodologies', 
+        code: 'method',
+        items: Array.from(stackMap.methodologies).sort()
+      },
+      { 
+        label: 'Platforms', 
+        code: 'platform',
+        items: Array.from(stackMap.platforms).sort()
+      },
+      { 
+        label: 'Domains', 
+        code: 'domain',
+        items: Array.from(stackMap.domains).sort()
+      },
+      { 
+        label: 'Skills', 
+        code: 'skill',
+        items: Array.from(stackMap.skills).sort()
+      }
+    ].filter(group => group.items.length > 0)
+  })
+
+  /**
+   * All stack items flattened (for Select All functionality)
+   */
+  const allStackItems = computed(() => {
+    return stackOptionsGrouped.value.flatMap(group => group.items)
+  })
+
+  /**
+   * All unique stack options across projects (legacy, for compatibility)
+   */
+  const allStackOptions = computed(() => {
+    const stackSet = new Set<string>()
+
+    projects.value.forEach(project => {
+      getStacksForProject(project).forEach(stack =>
+        stackSet.add(stack)
+      )
+    })
+
+    return Array.from(stackSet).sort()
+  })
 
   // ============================================================
   // COMPUTED — FILTERING & SORTING
@@ -766,7 +870,7 @@ export const useProjectsStore = defineStore('projects', () => {
   const filteredProjects = computed(() => {
     let results = [...projects.value]
 
-    // --- Search (title, descriptions, tags)
+    // Search filter
     if (searchQuery.value.trim()) {
       const query = searchQuery.value.toLowerCase()
 
@@ -780,7 +884,7 @@ export const useProjectsStore = defineStore('projects', () => {
       )
     }
 
-    // --- Stack filter
+    // Stack filter
     if (selectedStacks.value.length > 0) {
       results = results.filter(project => {
         const projectStacks = getStacksForProject(project).map(s =>
@@ -793,12 +897,11 @@ export const useProjectsStore = defineStore('projects', () => {
       })
     }
 
-    // --- Category filter
+    // Category filter
     if (selectedCategory.value) {
       results = results.filter(
         project =>
-          project.category?.category ===
-          selectedCategory.value
+          project.category?.category === selectedCategory.value
       )
     }
 
@@ -812,7 +915,7 @@ export const useProjectsStore = defineStore('projects', () => {
     const results = [...filteredProjects.value]
 
     if (sortBy.value.startsWith('year-')) {
-      const year = Number(sortBy.value.split('-')[1]);
+      const year = Number(sortBy.value.split('-')[1])
 
       return results
         .filter(p => new Date(p.endDate).getFullYear() === year)
@@ -820,7 +923,7 @@ export const useProjectsStore = defineStore('projects', () => {
           (a, b) =>
             new Date(b.endDate).getTime() -
             new Date(a.endDate).getTime()
-        );
+        )
     }
 
     switch (sortBy.value) {
@@ -854,7 +957,7 @@ export const useProjectsStore = defineStore('projects', () => {
   })
 
   // ============================================================
-  // ACTIONS — ASYNC / MUTATIONS
+  // ACTIONS
   // ============================================================
 
   const fetchProjects = async (): Promise<void> => {
@@ -862,7 +965,6 @@ export const useProjectsStore = defineStore('projects', () => {
     error.value = null
 
     try {
-      // Simulated API call
       await new Promise(resolve =>
         setTimeout(resolve, 800)
       )
@@ -877,10 +979,6 @@ export const useProjectsStore = defineStore('projects', () => {
     }
   }
 
-  // ============================================================
-  // ACTIONS — FILTER SETTERS
-  // ============================================================
-
   const setSearchQuery = (query?: string): void => {
     searchQuery.value = query || ''
   }
@@ -889,9 +987,7 @@ export const useProjectsStore = defineStore('projects', () => {
     selectedStacks.value = stacks || []
   }
 
-  const setSelectedCategory = (
-    category?: string | null
-  ): void => {
+  const setSelectedCategory = (category?: string | null): void => {
     selectedCategory.value = category || null
   }
 
@@ -905,10 +1001,6 @@ export const useProjectsStore = defineStore('projects', () => {
     selectedCategory.value = null
     sortBy.value = 'latest'
   }
-
-  // ============================================================
-  // ACTIONS — ERROR
-  // ============================================================
 
   const clearError = (): void => {
     error.value = null
@@ -928,15 +1020,20 @@ export const useProjectsStore = defineStore('projects', () => {
     selectedCategory,
     sortBy,
 
-    // Domain
-    featuredProjects,
-    projectsByCategory,
-    projectById,
+    // Basic data
     totalProjects,
-    availableYears,
+    featuredProjects,
+    projectById,
+    projectsByCategory,
 
-    // Filters
-    allStackOptions,
+    // Filter options
+    availableYears,
+    categoryOptions,
+    stackOptionsGrouped,
+    allStackItems,
+    allStackOptions, // legacy
+
+    // Filtered data
     filteredProjects,
     sortedProjects,
 
@@ -951,4 +1048,3 @@ export const useProjectsStore = defineStore('projects', () => {
     clearError,
   }
 })
-

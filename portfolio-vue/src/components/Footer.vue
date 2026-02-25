@@ -99,7 +99,7 @@ const year = new Date().getFullYear()
           </h4>
           <div class="flex items-center gap-4">
             <a
-              href="https://github.com"
+              href="https://github.com/YeyderJHJL"
               target="_blank"
               aria-label="GitHub"
               class="
@@ -112,7 +112,7 @@ const year = new Date().getFullYear()
             </a>
 
             <a
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/in/jhamil-yeyder-turpo-a%C3%B1asco/"
               target="_blank"
               aria-label="LinkedIn"
               class="
@@ -125,7 +125,7 @@ const year = new Date().getFullYear()
             </a>
 
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/jh_jl_yeyder/"
               target="_blank"
               aria-label="Instagram"
               class="
@@ -138,16 +138,16 @@ const year = new Date().getFullYear()
             </a>
 
             <a
-              href="https://twitter.com"
+              href="https://web.facebook.com/profile.php?id=100085333879369"
               target="_blank"
-              aria-label="Twitter"
+              aria-label="Facebook"
               class="
                 text-text-dark-muted
                 hover:text-accent-400
                 transition-colors
               "
             >
-              <i class="pi pi-twitter text-xl"></i>
+              <i class="pi pi-facebook text-xl"></i>
             </a>
           </div>
         </div>

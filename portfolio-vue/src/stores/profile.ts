@@ -150,7 +150,7 @@ const MOCK_PROFILE: UserProfile = {
   name: "Jhamil Yeyder Turpo Añasco",
   title: "Estudiante de Ingeniería de Sistemas & Administración",
   bio: "Estudiante de Ingeniería de Sistemas con formación complementaria en Administración. Becario PRONABEC con sólida experiencia en liderazgo de proyectos tecnológicos, desarrollo web y metodologías ágiles.",
-  avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces",
+  avatar: "images/profile/perfil_portfolio.png",
   social: {
     github: "https://github.com/jhamil-turpo",
     linkedin: "https://www.linkedin.com/in/jhamil-yeyder-turpo-añasco",

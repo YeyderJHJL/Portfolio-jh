@@ -112,7 +112,7 @@ const year = new Date().getFullYear()
             </a>
 
             <a
-              href="https://www.linkedin.com/in/jhamil-yeyder-turpo-a%C3%B1asco/"
+              href="https://www.linkedin.com/in/jhamil-yeyder-turpo"
               target="_blank"
               aria-label="LinkedIn"
               class="

@@ -1,49 +1,28 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useProfileStore } from '../stores/profile'
+import {
+  SKILL_CATEGORY_LABELS,
+  PROFICIENCY_COLORS,
+  TIMELINE_ICONS,
+  TIMELINE_TYPE_LABELS,
+  ABOUT_SECTIONS,
+} from '../data'
 
 const profileStore = useProfileStore()
 
-// Computed para labels de categorías
-const categoryLabels: Record<string, string> = {
-  frontend: 'Frontend',
-  backend: 'Backend',
-  data: 'Bases de Datos',
-  devops: 'DevOps & Tools',
-  qa: 'QA & Testing',
-  pm: 'Project Management',
-  soft: 'Soft Skills',
-  other: 'Other'
-}
-
-// Computed para íconos de timeline por tipo
 const getTimelineIcon = (type: string) => {
-  const icons: Record<string, string> = {
-    education: 'pi-graduation-cap',
-    achievement: 'pi-trophy',
-    project: 'pi-code',
-    certification: 'pi-verified',
-    experience: 'pi-briefcase'
-  }
-  return icons[type] || 'pi-circle'
+  return TIMELINE_ICONS[type] || 'pi-circle'
 }
 
-// Computed para colores de proficiency badges
 const getProficiencyColor = (proficiency: string) => {
-  const colors: Record<string, string> = {
-    expert: 'bg-accent-700 text-white',
-    advanced: 'bg-accent-600 text-white',
-    intermediate: 'bg-primary-300 dark:bg-primary-700 text-text-light-primary dark:text-text-dark-primary',
-    beginner: 'bg-primary-200 dark:bg-primary-800 text-text-light-secondary dark:text-text-dark-secondary'
-  }
-  return colors[proficiency] || colors.beginner
+  return PROFICIENCY_COLORS[proficiency] || PROFICIENCY_COLORS.beginner
 }
 
-// Formato de fecha para timeline
 const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('es-ES', { 
-    month: 'short', 
-    year: 'numeric' 
+  return new Date(dateString).toLocaleDateString('es-ES', {
+    month: 'short',
+    year: 'numeric'
   })
 }
 
@@ -54,7 +33,7 @@ onMounted(() => {
 
 <template>
   <div class="space-y-20">
-    
+
     <!-- ==========================
         LOADING SKELETON
     =========================== -->
@@ -70,12 +49,11 @@ onMounted(() => {
         CONTENT
     =========================== -->
     <div v-else class="max-w-4xl mx-auto space-y-20">
-      
+
       <!-- ==========================
           HERO SECTION
       =========================== -->
       <section class="text-center space-y-8">
-        <!-- Avatar -->
         <div class="relative w-55 h-55 mx-auto">
           <img
             :src="profileStore.profile.avatar"
@@ -84,7 +62,6 @@ onMounted(() => {
           />
         </div>
 
-        <!-- Name & Title -->
         <div class="space-y-3">
           <h1 class="text-4xl md:text-5xl font-bold text-text-light-primary dark:text-text-dark-primary">
             {{ profileStore.profile.name }}
@@ -97,7 +74,6 @@ onMounted(() => {
           </p>
         </div>
 
-        <!-- Social Links -->
         <div class="flex items-center justify-center gap-4 pt-4">
           <a
             v-if="profileStore.profile.social.github"
@@ -147,7 +123,7 @@ onMounted(() => {
       =========================== -->
       <section class="space-y-8">
         <h2 class="text-3xl font-bold text-text-light-primary dark:text-text-dark-primary text-center">
-          Mi Historia
+          {{ ABOUT_SECTIONS.story }}
         </h2>
         <div class="prose prose-lg max-w-none">
           <p
@@ -165,7 +141,7 @@ onMounted(() => {
       =========================== -->
       <section v-if="profileStore.profile.skills?.length" class="space-y-8">
         <h2 class="text-3xl font-bold text-text-light-primary dark:text-text-dark-primary text-center">
-          Habilidades
+          {{ ABOUT_SECTIONS.skills }}
         </h2>
         <div class="space-y-8">
           <div
@@ -174,7 +150,7 @@ onMounted(() => {
             class="space-y-4"
           >
             <h3 class="text-xs uppercase tracking-widest text-text-light-muted dark:text-text-dark-muted font-bold">
-              {{ categoryLabels[category] || category }}
+              {{ SKILL_CATEGORY_LABELS[category] || category }}
             </h3>
             <div class="flex flex-wrap gap-3">
               <span
@@ -198,7 +174,7 @@ onMounted(() => {
       =========================== -->
       <section v-if="profileStore.profile.certifications?.length" class="space-y-8">
         <h2 class="text-3xl font-bold text-text-light-primary dark:text-text-dark-primary text-center">
-          Certificaciones y Reconocimientos
+          {{ ABOUT_SECTIONS.certifications }}
         </h2>
         <div class="grid md:grid-cols-2 gap-6">
           <div
@@ -241,25 +217,21 @@ onMounted(() => {
       =========================== -->
       <section v-if="profileStore.profile.timeline?.length" class="space-y-8">
         <h2 class="text-3xl font-bold text-text-light-primary dark:text-text-dark-primary text-center">
-          Trayectoria
+          {{ ABOUT_SECTIONS.timeline }}
         </h2>
         <div class="relative">
-          <!-- Timeline Line -->
           <div class="absolute left-8 top-0 bottom-0 w-0.5 bg-primary-300 dark:bg-primary-700"></div>
 
-          <!-- Timeline Events -->
           <div class="space-y-12">
             <div
               v-for="event in profileStore.sortedTimeline"
               :key="event.id"
               class="relative pl-20"
             >
-              <!-- Icon -->
               <div class="absolute left-0 w-16 h-16 rounded-full bg-primary-400 dark:bg-primary-800 border-4 border-primary-300 dark:border-primary-700 flex items-center justify-center shadow-lg">
                 <i :class="['text-accent-700 dark:text-accent-600 text-xl', 'pi', getTimelineIcon(event.type)]"></i>
               </div>
 
-              <!-- Content -->
               <div class="bg-primary-400 dark:bg-primary-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 space-y-3">
                 <div class="flex items-start justify-between gap-4 flex-wrap">
                   <div class="flex-1">
@@ -279,11 +251,7 @@ onMounted(() => {
                       'bg-primary-300 dark:bg-primary-700 text-text-light-primary dark:text-text-dark-primary'
                     ]"
                   >
-                    {{ event.type === 'achievement' ? 'Logro' :
-                       event.type === 'education' ? 'Educación' :
-                       event.type === 'certification' ? 'Certificación' :
-                       event.type === 'project' ? 'Proyecto' :
-                       'Experiencia' }}
+                    {{ TIMELINE_TYPE_LABELS[event.type] || 'Experiencia' }}
                   </span>
                 </div>
 
@@ -291,7 +259,6 @@ onMounted(() => {
                   {{ event.description }}
                 </p>
 
-                <!-- Tags -->
                 <div v-if="event.tags?.length" class="flex flex-wrap gap-2 pt-2">
                   <span
                     v-for="tag in event.tags"

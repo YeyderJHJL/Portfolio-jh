@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import DarkModeToggle from './DarkModeToggle.vue'
+import { NAV_ITEMS, BRAND } from '../data'
 
 const isMobileMenuOpen = ref(false)
 
@@ -39,69 +40,21 @@ const closeMobileMenu = () => {
           transition-all
         "
       >
-        Portfolio
+        {{ BRAND.name }}
       </router-link>
 
       <!-- Desktop links -->
       <ul class="hidden md:flex items-center gap-8">
-        <li>
+        <li v-for="item in NAV_ITEMS" :key="item.routeName">
           <router-link
-            :to="{ name: 'home' }"
+            :to="{ name: item.routeName }"
             class="
               text-sm font-medium
               text-text-dark-secondary
               hover:text-accent-400 hover:tracking-wide
               transition-all duration-200
             "
-          >HOME</router-link>
-        </li>
-
-        <li>
-          <router-link
-            :to="{ name: 'projects' }"
-            class="
-              text-sm font-medium
-              text-text-dark-secondary
-              hover:text-accent-400 hover:tracking-wide
-              transition-all duration-200
-            "
-          >PROJECTS</router-link>
-        </li>
-
-        <li>
-          <router-link
-            :to="{ name: 'blog' }"
-            class="
-              text-sm font-medium
-              text-text-dark-secondary
-              hover:text-accent-400 hover:tracking-wide
-              transition-all duration-200
-            "
-          >BLOG</router-link>
-        </li>
-
-        <li>
-          <router-link
-            :to="{ name: 'about' }"
-            class="
-              text-sm font-medium
-              text-text-dark-secondary
-              hover:text-accent-400 hover:tracking-wide
-              transition-all duration-200
-            "
-          >ABOUT</router-link>
-        </li>
-
-        <li>
-          <router-link
-            :to="{ name: 'contact' }"
-            class="
-              text-sm font-medium
-              text-text-dark-secondary
-              hover:text-accent-400 hover:tracking-wide
-              transition-all duration-200
-            "
-          >CONTACT</router-link>
+          >{{ item.label }}</router-link>
         </li>
       </ul>
 
@@ -140,10 +93,10 @@ const closeMobileMenu = () => {
       "
     >
       <ul class="px-6 py-4 space-y-4">
-        <li>
+        <li v-for="item in NAV_ITEMS" :key="item.routeName">
           <router-link
             @click="closeMobileMenu"
-            :to="{ name: 'home' }"
+            :to="{ name: item.routeName }"
             class="
               block
               text-sm font-medium
@@ -151,63 +104,7 @@ const closeMobileMenu = () => {
               hover:text-accent-400
               transition-colors duration-200
             "
-          >Home</router-link>
-        </li>
-
-        <li>
-          <router-link
-            @click="closeMobileMenu"
-            :to="{ name: 'projects' }"
-            class="
-              block
-              text-sm font-medium
-              text-text-dark-secondary
-              hover:text-accent-400
-              transition-colors duration-200
-            "
-          >Projects</router-link>
-        </li>
-
-        <li>
-          <router-link
-            @click="closeMobileMenu"
-            :to="{ name: 'blog' }"
-            class="
-              block
-              text-sm font-medium
-              text-text-dark-secondary
-              hover:text-accent-400
-              transition-colors duration-200
-            "
-          >Blog</router-link>
-        </li>
-
-        <li>
-          <router-link
-            @click="closeMobileMenu"
-            :to="{ name: 'about' }"
-            class="
-              block
-              text-sm font-medium
-              text-text-dark-secondary
-              hover:text-accent-400
-              transition-colors duration-200
-            "
-          >About</router-link>
-        </li>
-
-        <li>
-          <router-link
-            @click="closeMobileMenu"
-            :to="{ name: 'contact' }"
-            class="
-              block
-              text-sm font-medium
-              text-text-dark-secondary
-              hover:text-accent-400
-              transition-colors duration-200
-            "
-          >Contact</router-link>
+          >{{ item.labelMobile || item.label }}</router-link>
         </li>
       </ul>
     </div>

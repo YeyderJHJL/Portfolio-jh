@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useProjectsStore, CATEGORY_LABELS } from '../stores/projects'
+import { useProjectsStore } from '../stores/projects'
+import { PROJECT_CATEGORY_LABELS, SORT_LABELS, PROJECTS_PAGE } from '../data'
 import Button from 'primevue/button'
 import Select from 'primevue/select'
 import TieredMenu from 'primevue/tieredmenu'
@@ -103,15 +104,7 @@ const currentSortLabel = computed(() => {
   if (projectsStore.sortBy.startsWith('year-')) {
     return projectsStore.sortBy.split('-')[1]
   }
-  
-  const labels: Record<string, string> = {
-    'latest': 'Latest',
-    'oldest': 'Oldest',
-    'name-asc': 'A-Z',
-    'name-desc': 'Z-A'
-  }
-  
-  return labels[projectsStore.sortBy] || 'Sort'
+  return SORT_LABELS[projectsStore.sortBy] || 'Sort'
 })
 
 /**
@@ -218,10 +211,10 @@ onMounted(() => {
     =========================== -->
     <header class="text-center space-y-3">
       <h1 class="text-4xl md:text-5xl font-bold text-text-light-primary dark:text-text-dark-primary">
-        My Projects
+        {{ PROJECTS_PAGE.title }}
       </h1>
       <p class="text-lg md:text-xl text-text-light-secondary dark:text-text-dark-secondary max-w-2xl mx-auto">
-        Software development, project management, and community building
+        {{ PROJECTS_PAGE.subtitle }}
       </p>
     </header>
 
@@ -446,7 +439,7 @@ onMounted(() => {
           v-if="projectsStore.selectedCategory" 
           class="px-4 py-2 rounded-full bg-accent-200 dark:bg-accent-900 text-text-light-primary dark:text-text-dark-primary text-sm font-medium shadow-sm"
         >
-          {{ CATEGORY_LABELS[projectsStore.selectedCategory] }}
+          {{ PROJECT_CATEGORY_LABELS[projectsStore.selectedCategory] }}
         </span>
 
         <span 
@@ -513,13 +506,13 @@ onMounted(() => {
         <i class="pi pi-inbox text-6xl text-text-light-muted dark:text-text-dark-muted"></i>
       </div>
       <h3 class="text-3xl font-bold mb-3 text-text-light-primary dark:text-text-dark-primary">
-        No projects found
+        {{ PROJECTS_PAGE.emptyState.title }}
       </h3>
       <p class="text-lg text-text-light-secondary dark:text-text-dark-secondary mb-8 max-w-md leading-relaxed">
-        Try adjusting your filters or search terms to discover more projects
+        {{ PROJECTS_PAGE.emptyState.subtitle }}
       </p>
       <Button
-        label="Clear All Filters"
+        :label="PROJECTS_PAGE.emptyState.clearButton"
         icon="pi pi-filter-slash"
         @click="handleClearFilters"
         class="px-8 py-4 bg-accent-700 hover:bg-accent-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all text-lg"
@@ -553,7 +546,7 @@ onMounted(() => {
           <!-- Category Badge -->
           <div class="absolute top-3 left-3">
             <span class="px-3 py-1.5 rounded-full bg-accent-700 text-white text-xs font-bold shadow-lg backdrop-blur-sm">
-              {{ CATEGORY_LABELS[project.category?.category || 'other'] }}
+              {{ PROJECT_CATEGORY_LABELS[project.category?.category || 'other'] }}
             </span>
           </div>
 

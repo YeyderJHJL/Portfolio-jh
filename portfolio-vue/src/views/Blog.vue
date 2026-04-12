@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useBlogStore } from '../stores/blog'
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
+import { BLOG_PAGE } from '../data'
 
 const router = useRouter()
 const blogStore = useBlogStore()
@@ -38,10 +39,10 @@ onMounted(() => {
     =========================== -->
     <header class="text-center space-y-4">
       <h1 class="text-4xl md:text-5xl font-bold text-text-light-primary dark:text-text-dark-primary">
-        Blog
+        {{ BLOG_PAGE.title }}
       </h1>
       <p class="text-lg md:text-xl text-text-light-secondary dark:text-text-dark-secondary max-w-2xl mx-auto leading-relaxed">
-        Experiencias, aprendizajes y reflexiones sobre tecnología, desarrollo y gestión de proyectos
+        {{ BLOG_PAGE.subtitle }}
       </p>
     </header>
 
@@ -66,7 +67,7 @@ onMounted(() => {
         <div class="flex items-center gap-3">
           <i class="pi pi-star-fill text-accent-700 dark:text-accent-600 text-xl"></i>
           <h2 class="text-2xl font-bold text-text-light-primary dark:text-text-dark-primary">
-            Destacados
+            {{ BLOG_PAGE.featured }}
           </h2>
         </div>
 
@@ -88,7 +89,7 @@ onMounted(() => {
                 />
                 <div class="absolute inset-0 bg-linear-to-t from-primary-900/60 to-transparent"></div>
                 <span class="absolute top-4 left-4 px-3 py-1.5 rounded-full bg-accent-700 text-white text-xs font-bold shadow-lg">
-                  Destacado
+                  {{ BLOG_PAGE.featuredBadge }}
                 </span>
               </div>
 
@@ -128,7 +129,7 @@ onMounted(() => {
                 <!-- Read More -->
                 <div class="pt-2">
                   <span class="text-accent-700 dark:text-accent-600 font-semibold flex items-center gap-2 group-hover:gap-3 transition-all">
-                    Leer más
+                    {{ BLOG_PAGE.readMore }}
                     <i class="pi pi-arrow-right text-sm"></i>
                   </span>
                 </div>
@@ -143,7 +144,7 @@ onMounted(() => {
       =========================== -->
       <section class="space-y-6">
         <h2 class="text-2xl font-bold text-text-light-primary dark:text-text-dark-primary">
-          Todos los Artículos
+          {{ BLOG_PAGE.allArticles }}
         </h2>
 
         <!-- Search Bar -->
@@ -151,7 +152,7 @@ onMounted(() => {
           <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-text-light-muted dark:text-text-dark-muted z-10 text-lg"></i>
           <InputText
             v-model="blogStore.searchQuery"
-            placeholder="Buscar artículos..."
+            :placeholder="BLOG_PAGE.searchPlaceholder"
             class="w-full h-14 pl-12 pr-4 rounded-xl bg-primary-400 dark:bg-primary-800 border-2 border-transparent focus:border-accent-700 dark:focus:border-accent-600 text-text-light-primary dark:text-text-dark-primary placeholder:text-text-light-muted dark:placeholder:text-text-dark-muted outline-none transition-all duration-200 text-base"
             unstyled
           />
@@ -160,7 +161,7 @@ onMounted(() => {
         <!-- Tags Filter -->
         <div v-if="blogStore.allTags.length > 0" class="space-y-3">
           <p class="text-sm font-semibold text-text-light-muted dark:text-text-dark-muted uppercase tracking-wider">
-            Filtrar por tema
+            {{ BLOG_PAGE.filterByTopic }}
           </p>
           <div class="flex flex-wrap gap-3">
             <button
@@ -183,7 +184,7 @@ onMounted(() => {
         <div v-if="blogStore.searchQuery || blogStore.selectedTags.length > 0" class="flex items-center gap-3 flex-wrap pt-2">
           <span class="text-sm font-semibold text-text-light-muted dark:text-text-dark-muted flex items-center gap-2">
             <i class="pi pi-filter-fill"></i>
-            Filtros activos:
+            {{ BLOG_PAGE.activeFilters }}
           </span>
           
           <span v-if="blogStore.searchQuery" class="px-4 py-2 rounded-full bg-accent-700 text-white text-sm font-medium shadow-sm">
@@ -203,7 +204,7 @@ onMounted(() => {
             class="ml-auto px-4 py-2 rounded-full text-sm font-semibold text-accent-700 dark:text-accent-600 hover:bg-accent-200 dark:hover:bg-accent-900 transition-all flex items-center gap-2"
           >
             <i class="pi pi-times-circle"></i>
-            Limpiar filtros
+            {{ BLOG_PAGE.clearFilters }}
           </button>
         </div>
 
@@ -226,13 +227,13 @@ onMounted(() => {
           <i class="pi pi-inbox text-6xl text-text-light-muted dark:text-text-dark-muted"></i>
         </div>
         <h3 class="text-3xl font-bold mb-3 text-text-light-primary dark:text-text-dark-primary">
-          No se encontraron artículos
+          {{ BLOG_PAGE.emptyState.title }}
         </h3>
         <p class="text-lg text-text-light-secondary dark:text-text-dark-secondary mb-8 max-w-md leading-relaxed">
-          Intenta ajustar los filtros de búsqueda para descubrir más contenido
+          {{ BLOG_PAGE.emptyState.subtitle }}
         </p>
         <Button
-          label="Limpiar Filtros"
+          :label="BLOG_PAGE.emptyState.clearButton"
           icon="pi pi-filter-slash"
           @click="handleClearFilters"
           class="px-8 py-4 bg-accent-700 hover:bg-accent-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
@@ -302,7 +303,7 @@ onMounted(() => {
               <!-- Read More -->
               <div class="pt-2">
                 <span class="text-accent-700 dark:text-accent-600 font-semibold flex items-center gap-2 group-hover:gap-3 transition-all">
-                  Leer artículo completo
+                  {{ BLOG_PAGE.readFull }}
                   <i class="pi pi-arrow-right text-sm"></i>
                 </span>
               </div>

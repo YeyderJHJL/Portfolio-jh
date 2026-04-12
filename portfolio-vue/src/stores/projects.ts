@@ -15,20 +15,12 @@ export type SortOption =
   | `year-${number}`
 
 // ============================================================
-// CONSTANTS
+// CONSTANTS (re-exported from data layer for backward compat)
 // ============================================================
 
-export const CATEGORY_LABELS: Record<string, string> = {
-  'software': 'Software',
-  'product': 'Product',
-  'project-management': 'Project Management',
-  'event': 'Events',
-  'research': 'Research',
-  'community': 'Community',
-  'social-impact': 'Social Impact',
-  'education': 'Education',
-  'other': 'Other'
-}
+import { PROJECT_CATEGORY_LABELS } from "../data"
+const CATEGORY_LABELS = PROJECT_CATEGORY_LABELS
+export { CATEGORY_LABELS }
 
 // ============================================================
 // STORE

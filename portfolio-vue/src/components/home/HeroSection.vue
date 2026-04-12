@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { useTypedText } from '../../composables/useTypedText'
+import { HERO_DATA } from '../../data'
 
 const router = useRouter()
 
 const goToProjects = () => router.push('/projects')
 const goToContact = () => router.push('/contact')
 
-const fullName = 'Jhamil Yeyder Turpo Añasco'
-const typedName = useTypedText(fullName, 120)
+const typedName = useTypedText(HERO_DATA.fullName, 120)
 </script>
 
 <template>
@@ -33,7 +33,7 @@ const typedName = useTypedText(fullName, 120)
       class="text-lg md:text-2xl mb-8
              text-text-light-secondary dark:text-text-dark-secondary z-10"
     >
-      Fullstack Developer & Project Manager
+      {{ HERO_DATA.role }}
     </p>
 
     <div class="flex gap-4 z-10">
@@ -45,7 +45,7 @@ const typedName = useTypedText(fullName, 120)
                dark:hover:bg-accent-400
                transition-colors duration-300"
       >
-        View Projects
+        {{ HERO_DATA.buttons.projects }}
       </button>
 
       <button
@@ -57,7 +57,7 @@ const typedName = useTypedText(fullName, 120)
                dark:hover:bg-primary-600
                transition-colors duration-300"
       >
-        Contact Me
+        {{ HERO_DATA.buttons.contact }}
       </button>
     </div>
 

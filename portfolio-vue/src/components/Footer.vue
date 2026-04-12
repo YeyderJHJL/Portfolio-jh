@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { FOOTER_LINKS, SOCIAL_LINKS, BRAND } from '../data'
+
 const year = new Date().getFullYear()
 </script>
 
@@ -24,10 +26,10 @@ const year = new Date().getFullYear()
               bg-clip-text text-transparent
             "
           >
-            Portfolio
+            {{ BRAND.name }}
           </h3>
           <p class="text-sm leading-relaxed text-text-dark-muted">
-            Building amazing web experiences with Vue.js and modern technologies.
+            {{ BRAND.tagline }}
           </p>
         </div>
 
@@ -37,9 +39,9 @@ const year = new Date().getFullYear()
             Quick Links
           </h4>
           <ul class="space-y-2">
-            <li>
+            <li v-for="link in FOOTER_LINKS" :key="link.routeName">
               <router-link
-                :to="{ name: 'home' }"
+                :to="{ name: link.routeName }"
                 class="
                   text-sm font-medium
                   text-text-dark-secondary
@@ -47,46 +49,7 @@ const year = new Date().getFullYear()
                   transition-colors
                 "
               >
-                Home
-              </router-link>
-            </li>
-            <li>
-              <router-link
-                :to="{ name: 'projects' }"
-                class="
-                  text-sm font-medium
-                  text-text-dark-secondary
-                  hover:text-accent-400
-                  transition-colors
-                "
-              >
-                Projects
-              </router-link>
-            </li>
-            <li>
-              <router-link
-                :to="{ name: 'blog' }"
-                class="
-                  text-sm font-medium
-                  text-text-dark-secondary
-                  hover:text-accent-400
-                  transition-colors
-                "
-              >
-                Blog
-              </router-link>
-            </li>
-            <li>
-              <router-link
-                :to="{ name: 'contact' }"
-                class="
-                  text-sm font-medium
-                  text-text-dark-secondary
-                  hover:text-accent-400
-                  transition-colors
-                "
-              >
-                Contact
+                {{ link.label }}
               </router-link>
             </li>
           </ul>
@@ -99,55 +62,18 @@ const year = new Date().getFullYear()
           </h4>
           <div class="flex items-center gap-4">
             <a
-              href="https://github.com/YeyderJHJL"
+              v-for="social in SOCIAL_LINKS"
+              :key="social.platform"
+              :href="social.url"
               target="_blank"
-              aria-label="GitHub"
+              :aria-label="social.ariaLabel"
               class="
                 text-text-dark-muted
                 hover:text-accent-400
                 transition-colors
               "
             >
-              <i class="pi pi-github text-xl"></i>
-            </a>
-
-            <a
-              href="https://www.linkedin.com/in/jhamil-yeyder-turpo"
-              target="_blank"
-              aria-label="LinkedIn"
-              class="
-                text-text-dark-muted
-                hover:text-accent-400
-                transition-colors
-              "
-            >
-              <i class="pi pi-linkedin text-xl"></i>
-            </a>
-
-            <a
-              href="https://www.instagram.com/jh_jl_yeyder/"
-              target="_blank"
-              aria-label="Instagram"
-              class="
-                text-text-dark-muted
-                hover:text-accent-400
-                transition-colors
-              "
-            >
-              <i class="pi pi-instagram text-xl"></i>
-            </a>
-
-            <a
-              href="https://web.facebook.com/profile.php?id=100085333879369"
-              target="_blank"
-              aria-label="Facebook"
-              class="
-                text-text-dark-muted
-                hover:text-accent-400
-                transition-colors
-              "
-            >
-              <i class="pi pi-facebook text-xl"></i>
+              <i :class="[social.icon, 'text-xl']"></i>
             </a>
           </div>
         </div>
@@ -156,7 +82,7 @@ const year = new Date().getFullYear()
       <!-- Bottom -->
       <div class="border-t border-primary-800 mt-10 pt-6 text-center">
         <p class="text-sm text-text-dark-muted">
-          © {{ year }} Portfolio. All rights reserved.
+          &copy; {{ year }} {{ BRAND.name }}. All rights reserved.
         </p>
       </div>
     </div>

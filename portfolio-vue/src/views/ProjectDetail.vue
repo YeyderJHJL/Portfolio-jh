@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useProjectsStore, CATEGORY_LABELS } from '../stores/projects'
+import { useProjectsStore } from '../stores/projects'
 import type { Project } from '../types'
 import Button from 'primevue/button'
+import { PROJECT_CATEGORY_LABELS, TECH_STACK_LABELS, PROJECT_DETAIL } from '../data'
 
 // ---------------------------
 // SETUP
@@ -53,15 +54,14 @@ const dateRange = computed(() => {
 
 const techStackGroups = computed(() => {
   if (!project.value?.stack) return []
-  
-  return [
-    { label: 'Technologies', items: project.value.stack.technologies || [], icon: '💻' },
-    { label: 'Tools', items: project.value.stack.tools || [], icon: '🛠️' },
-    { label: 'Methodologies', items: project.value.stack.methodologies || [], icon: '📋' },
-    { label: 'Platforms', items: project.value.stack.platforms || [], icon: '☁️' },
-    { label: 'Domains', items: project.value.stack.domains || [], icon: '🎯' },
-    { label: 'Skills', items: project.value.stack.skills || [], icon: '⚡' }
-  ].filter(group => group.items.length > 0)
+
+  return Object.entries(TECH_STACK_LABELS)
+    .map(([key, config]) => ({
+      label: config.label,
+      icon: config.icon,
+      items: (project.value?.stack as any)?.[key] || [],
+    }))
+    .filter(group => group.items.length > 0)
 })
 
 // ---------------------------
@@ -78,13 +78,13 @@ const goToProject = (id: string) => router.push(`/projects/${id}`)
       <i class="pi pi-exclamation-triangle text-6xl text-accent-700 dark:text-accent-600"></i>
     </div>
     <h1 class="text-4xl font-bold text-text-light-primary dark:text-text-dark-primary">
-      Project Not Found
+      {{ PROJECT_DETAIL.notFound.title }}
     </h1>
     <p class="text-lg text-text-light-secondary dark:text-text-dark-secondary max-w-md">
-      The project you're looking for doesn't exist or has been removed.
+      {{ PROJECT_DETAIL.notFound.subtitle }}
     </p>
     <Button
-      label="Back to Projects"
+      :label="PROJECT_DETAIL.notFound.backButton"
       icon="pi pi-arrow-left"
       @click="goBack"
       class="px-8 py-4 bg-accent-700 hover:bg-accent-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
@@ -113,7 +113,7 @@ const goToProject = (id: string) => router.push(`/projects/${id}`)
             <!-- Metadata Tags -->
             <div class="flex flex-wrap items-center gap-3">
               <span class="px-4 py-2 rounded-full bg-accent-700 text-white text-sm font-bold shadow-lg">
-                {{ CATEGORY_LABELS[project.category?.category || 'other'] }}
+                {{ PROJECT_CATEGORY_LABELS[project.category?.category || 'other'] }}
               </span>
               <span class="px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm text-white text-sm font-semibold">
                 {{ dateRange }}

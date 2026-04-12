@@ -6,6 +6,13 @@ import Textarea from 'primevue/textarea'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
 import type { ContactMessage } from '../types'
+import {
+  CONTACT_HEADER,
+  CONTACT_FORM,
+  CONTACT_VALIDATION,
+  CONTACT_MESSAGES,
+  CONTACT_CARDS,
+} from '../data'
 
 const profileStore = useProfileStore()
 
@@ -39,28 +46,28 @@ const validateForm = (): boolean => {
   errors.value = { name: '', email: '', subject: '', message: '' }
 
   if (!formData.value.name.trim()) {
-    errors.value.name = 'El nombre es requerido'
+    errors.value.name = CONTACT_VALIDATION.name.required
     isValid = false
   }
 
   if (!formData.value.email.trim()) {
-    errors.value.email = 'El email es requerido'
+    errors.value.email = CONTACT_VALIDATION.email.required
     isValid = false
   } else if (!validateEmail(formData.value.email)) {
-    errors.value.email = 'Email inválido'
+    errors.value.email = CONTACT_VALIDATION.email.invalid
     isValid = false
   }
 
   if (!formData.value.subject.trim()) {
-    errors.value.subject = 'El asunto es requerido'
+    errors.value.subject = CONTACT_VALIDATION.subject.required
     isValid = false
   }
 
   if (!formData.value.message.trim()) {
-    errors.value.message = 'El mensaje es requerido'
+    errors.value.message = CONTACT_VALIDATION.message.required
     isValid = false
   } else if (formData.value.message.trim().length < 10) {
-    errors.value.message = 'El mensaje debe tener al menos 10 caracteres'
+    errors.value.message = CONTACT_VALIDATION.message.minLength
     isValid = false
   }
 
@@ -75,15 +82,11 @@ const handleSubmit = async () => {
   submitError.value = null
 
   try {
-    // Simular envío de formulario
     await new Promise(resolve => setTimeout(resolve, 1500))
-    
-    // En producción: await fetch('/api/contact', { method: 'POST', body: JSON.stringify(formData.value) })
     console.log('Contact form submitted:', formData.value)
 
     submitSuccess.value = true
-    
-    // Limpiar formulario
+
     formData.value = {
       name: '',
       email: '',
@@ -91,13 +94,12 @@ const handleSubmit = async () => {
       message: ''
     }
 
-    // Ocultar mensaje de éxito después de 5 segundos
     setTimeout(() => {
       submitSuccess.value = false
     }, 5000)
 
   } catch (err) {
-    submitError.value = 'Hubo un error al enviar el mensaje. Por favor intenta nuevamente.'
+    submitError.value = CONTACT_MESSAGES.error
     console.error('Error submitting form:', err)
   } finally {
     isSubmitting.value = false
@@ -111,22 +113,18 @@ onMounted(() => {
 
 <template>
   <div class="max-w-4xl mx-auto space-y-12">
-    
-    <!-- ==========================
-        HEADER
-    =========================== -->
+
+    <!-- HEADER -->
     <header class="text-center space-y-4">
       <h1 class="text-4xl md:text-5xl font-bold text-text-light-primary dark:text-text-dark-primary">
-        Contáctame
+        {{ CONTACT_HEADER.title }}
       </h1>
       <p class="text-lg md:text-xl text-text-light-secondary dark:text-text-dark-secondary max-w-2xl mx-auto leading-relaxed">
-        ¿Tienes un proyecto en mente o quieres colaborar? Envíame un mensaje y te responderé lo antes posible.
+        {{ CONTACT_HEADER.subtitle }}
       </p>
     </header>
 
-    <!-- ==========================
-        SUCCESS MESSAGE
-    =========================== -->
+    <!-- SUCCESS MESSAGE -->
     <Message
       v-if="submitSuccess"
       severity="success"
@@ -140,12 +138,10 @@ onMounted(() => {
         text: { class: 'text-green-800 dark:text-green-200 font-semibold' }
       }"
     >
-      ¡Mensaje enviado exitosamente! Te responderé pronto.
+      {{ CONTACT_MESSAGES.success }}
     </Message>
 
-    <!-- ==========================
-        ERROR MESSAGE
-    =========================== -->
+    <!-- ERROR MESSAGE -->
     <Message
       v-if="submitError"
       severity="error"
@@ -162,29 +158,25 @@ onMounted(() => {
       {{ submitError }}
     </Message>
 
-    <!-- ==========================
-        CONTENT GRID
-    =========================== -->
+    <!-- CONTENT GRID -->
     <div class="grid md:grid-cols-2 gap-12">
-      
-      <!-- ==========================
-          FORM COLUMN
-      =========================== -->
+
+      <!-- FORM COLUMN -->
       <div class="space-y-6">
         <h2 class="text-2xl font-bold text-text-light-primary dark:text-text-dark-primary mb-6">
-          Enviar Mensaje
+          {{ CONTACT_FORM.title }}
         </h2>
 
         <form @submit.prevent="handleSubmit" class="space-y-6">
           <!-- Name -->
           <div class="space-y-2">
             <label for="name" class="block text-sm font-semibold text-text-light-primary dark:text-text-dark-primary">
-              Nombre <span class="text-red-500">*</span>
+              {{ CONTACT_FORM.fields.name.label }} <span class="text-red-500">*</span>
             </label>
             <InputText
               id="name"
               v-model="formData.name"
-              placeholder="Tu nombre completo"
+              :placeholder="CONTACT_FORM.fields.name.placeholder"
               :class="[
                 'w-full px-4 py-3 rounded-xl bg-primary-400 dark:bg-primary-800 border-2 transition-all duration-200',
                 'text-text-light-primary dark:text-text-dark-primary placeholder:text-text-light-muted dark:placeholder:text-text-dark-muted',
@@ -199,13 +191,13 @@ onMounted(() => {
           <!-- Email -->
           <div class="space-y-2">
             <label for="email" class="block text-sm font-semibold text-text-light-primary dark:text-text-dark-primary">
-              Email <span class="text-red-500">*</span>
+              {{ CONTACT_FORM.fields.email.label }} <span class="text-red-500">*</span>
             </label>
             <InputText
               id="email"
               v-model="formData.email"
               type="email"
-              placeholder="tu@email.com"
+              :placeholder="CONTACT_FORM.fields.email.placeholder"
               :class="[
                 'w-full px-4 py-3 rounded-xl bg-primary-400 dark:bg-primary-800 border-2 transition-all duration-200',
                 'text-text-light-primary dark:text-text-dark-primary placeholder:text-text-light-muted dark:placeholder:text-text-dark-muted',
@@ -220,12 +212,12 @@ onMounted(() => {
           <!-- Subject -->
           <div class="space-y-2">
             <label for="subject" class="block text-sm font-semibold text-text-light-primary dark:text-text-dark-primary">
-              Asunto <span class="text-red-500">*</span>
+              {{ CONTACT_FORM.fields.subject.label }} <span class="text-red-500">*</span>
             </label>
             <InputText
               id="subject"
               v-model="formData.subject"
-              placeholder="¿De qué quieres hablar?"
+              :placeholder="CONTACT_FORM.fields.subject.placeholder"
               :class="[
                 'w-full px-4 py-3 rounded-xl bg-primary-400 dark:bg-primary-800 border-2 transition-all duration-200',
                 'text-text-light-primary dark:text-text-dark-primary placeholder:text-text-light-muted dark:placeholder:text-text-dark-muted',
@@ -240,13 +232,13 @@ onMounted(() => {
           <!-- Message -->
           <div class="space-y-2">
             <label for="message" class="block text-sm font-semibold text-text-light-primary dark:text-text-dark-primary">
-              Mensaje <span class="text-red-500">*</span>
+              {{ CONTACT_FORM.fields.message.label }} <span class="text-red-500">*</span>
             </label>
             <Textarea
               id="message"
               v-model="formData.message"
               rows="6"
-              placeholder="Escribe tu mensaje aquí..."
+              :placeholder="CONTACT_FORM.fields.message.placeholder"
               :class="[
                 'w-full px-4 py-3 rounded-xl bg-primary-400 dark:bg-primary-800 border-2 transition-all duration-200',
                 'text-text-light-primary dark:text-text-dark-primary placeholder:text-text-light-muted dark:placeholder:text-text-dark-muted',
@@ -272,22 +264,20 @@ onMounted(() => {
           >
             <span v-if="isSubmitting" class="flex items-center justify-center gap-3">
               <i class="pi pi-spin pi-spinner"></i>
-              Enviando...
+              {{ CONTACT_FORM.submittingButton }}
             </span>
             <span v-else class="flex items-center justify-center gap-3">
               <i class="pi pi-send"></i>
-              Enviar Mensaje
+              {{ CONTACT_FORM.submitButton }}
             </span>
           </Button>
         </form>
       </div>
 
-      <!-- ==========================
-          LINKS COLUMN
-      =========================== -->
+      <!-- LINKS COLUMN -->
       <div class="space-y-6">
         <h2 class="text-2xl font-bold text-text-light-primary dark:text-text-dark-primary mb-6">
-          Contacto Directo
+          {{ CONTACT_CARDS.directTitle }}
         </h2>
 
         <!-- Email Card -->
@@ -301,13 +291,13 @@ onMounted(() => {
             </div>
             <div class="flex-1">
               <h3 class="text-lg font-bold text-text-light-primary dark:text-text-dark-primary mb-2">
-                Email
+                {{ CONTACT_CARDS.email.title }}
               </h3>
               <p class="text-base text-accent-700 dark:text-accent-600 font-medium break-all">
                 {{ profileStore.profile.social.email }}
               </p>
               <p class="text-sm text-text-light-muted dark:text-text-dark-muted mt-2">
-                Envíame un correo directamente
+                {{ CONTACT_CARDS.email.subtitle }}
               </p>
             </div>
           </div>
@@ -327,14 +317,14 @@ onMounted(() => {
             </div>
             <div class="flex-1">
               <h3 class="text-lg font-bold text-text-light-primary dark:text-text-dark-primary mb-2 flex items-center gap-2">
-                LinkedIn
+                {{ CONTACT_CARDS.linkedin.title }}
                 <i class="pi pi-external-link text-sm text-text-light-muted dark:text-text-dark-muted"></i>
               </h3>
               <p class="text-base text-blue-600 dark:text-blue-400 font-medium">
-                Conectemos en LinkedIn
+                {{ CONTACT_CARDS.linkedin.cta }}
               </p>
               <p class="text-sm text-text-light-muted dark:text-text-dark-muted mt-2">
-                Networking profesional
+                {{ CONTACT_CARDS.linkedin.subtitle }}
               </p>
             </div>
           </div>
@@ -354,14 +344,14 @@ onMounted(() => {
             </div>
             <div class="flex-1">
               <h3 class="text-lg font-bold text-text-light-primary dark:text-text-dark-primary mb-2 flex items-center gap-2">
-                GitHub
+                {{ CONTACT_CARDS.github.title }}
                 <i class="pi pi-external-link text-sm text-text-light-muted dark:text-text-dark-muted"></i>
               </h3>
               <p class="text-base text-gray-800 dark:text-gray-300 font-medium">
-                Revisa mis proyectos
+                {{ CONTACT_CARDS.github.cta }}
               </p>
               <p class="text-sm text-text-light-muted dark:text-text-dark-muted mt-2">
-                Código abierto y colaboración
+                {{ CONTACT_CARDS.github.subtitle }}
               </p>
             </div>
           </div>
@@ -373,7 +363,7 @@ onMounted(() => {
             <i class="pi pi-info-circle text-accent-700 dark:text-accent-600 text-xl shrink-0 mt-0.5"></i>
             <div>
               <p class="text-sm text-text-light-primary dark:text-text-dark-primary leading-relaxed">
-                <strong>Tiempo de respuesta:</strong> Generalmente respondo en 24-48 horas. Para consultas urgentes, escríbeme directamente por email.
+                <strong>Tiempo de respuesta:</strong> {{ CONTACT_CARDS.responseNote }}
               </p>
             </div>
           </div>

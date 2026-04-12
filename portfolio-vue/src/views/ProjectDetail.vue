@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useProjectsStore } from '../stores/projects'
 import type { Project } from '../types'
 import Button from 'primevue/button'
+import ImageFallback from '../components/ImageFallback.vue'
 import { PROJECT_CATEGORY_LABELS, TECH_STACK_LABELS, PROJECT_DETAIL } from '../data'
 
 // ---------------------------
@@ -100,12 +101,13 @@ const goToProject = (id: string) => router.push(`/projects/${id}`)
     =========================== -->
     <section class="relative -mx-4 md:-mx-8 lg:-mx-16">
       <div class="relative w-full h-[60vh] min-h-100 overflow-hidden rounded-b-3xl">
-        <img
+        <ImageFallback
           :src="project.images.hero"
           :alt="project.title"
-          class="w-full h-full object-cover"
-        />
-        <div class="absolute inset-0 bg-gradient-to-t from-primary-900/95 via-primary-900/60 to-transparent"></div>
+          variant="project"
+        >
+          <div class="absolute inset-0 bg-gradient-to-t from-primary-900/95 via-primary-900/60 to-transparent"></div>
+        </ImageFallback>
         
         <!-- Title Overlay -->
         <div class="absolute inset-0 flex items-end">
@@ -288,14 +290,17 @@ const goToProject = (id: string) => router.push(`/projects/${id}`)
       'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
     ]"
   >
-    <img
+    <div
       v-for="(screenshot, i) in project.images.screenshots"
       :key="i"
-      :src="screenshot"
-      :alt="`Screenshot ${i + 1}`"
-      loading="lazy"
-      class="rounded-2xl shadow-lg w-full hover:shadow-2xl transition-shadow"
-    />
+      class="rounded-2xl shadow-lg overflow-hidden aspect-video hover:shadow-2xl transition-shadow"
+    >
+      <ImageFallback
+        :src="screenshot"
+        :alt="`Screenshot ${i + 1}`"
+        variant="screenshot"
+      />
+    </div>
   </div>
 </section>
 

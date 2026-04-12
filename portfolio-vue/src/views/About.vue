@@ -8,6 +8,7 @@ import {
   TIMELINE_TYPE_LABELS,
   ABOUT_SECTIONS,
 } from '../data'
+import ImageFallback from '../components/ImageFallback.vue'
 
 const profileStore = useProfileStore()
 
@@ -54,11 +55,11 @@ onMounted(() => {
           HERO SECTION
       =========================== -->
       <section class="text-center space-y-8">
-        <div class="relative w-55 h-55 mx-auto">
-          <img
+        <div class="relative w-55 h-55 mx-auto rounded-full overflow-hidden shadow-2xl border-4 border-primary-300 dark:border-primary-700">
+          <ImageFallback
             :src="profileStore.profile.avatar"
             :alt="profileStore.profile.name"
-            class="w-full h-full rounded-full object-cover shadow-2xl border-4 border-primary-300 dark:border-primary-700"
+            variant="avatar"
           />
         </div>
 

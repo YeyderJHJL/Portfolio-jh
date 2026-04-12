@@ -9,6 +9,7 @@
  */
 
 import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router";
+import { BRAND } from "../data";
 
 /**
  * TIPOS DE RUTAS
@@ -61,7 +62,7 @@ const routes: RouteRecordRaw[] = [
         component: Home,
         meta: {
           layout: "public",
-          title: "Home - Portfolio",
+          title: `Home - ${BRAND.name}`,
         },
       },
 
@@ -72,7 +73,7 @@ const routes: RouteRecordRaw[] = [
         component: About,
         meta: {
           layout: "public",
-          title: "About - Portfolio",
+          title: `About - ${BRAND.name}`,
         },
       },
 
@@ -83,7 +84,7 @@ const routes: RouteRecordRaw[] = [
         component: Projects,
         meta: {
           layout: "public",
-          title: "Projects - Portfolio",
+          title: `Projects - ${BRAND.name}`,
         },
       },
       {
@@ -92,7 +93,7 @@ const routes: RouteRecordRaw[] = [
         component: ProjectDetail,
         meta: {
           layout: "public",
-          title: "Project Detail - Portfolio",
+          title: `Project Detail - ${BRAND.name}`,
         },
         props: true, // Pasar params como props al componente
       },
@@ -104,7 +105,7 @@ const routes: RouteRecordRaw[] = [
         component: Blog,
         meta: {
           layout: "public",
-          title: "Blog - Portfolio",
+          title: `Blog - ${BRAND.name}`,
         },
       },
       {
@@ -113,7 +114,7 @@ const routes: RouteRecordRaw[] = [
         component: BlogPost,
         meta: {
           layout: "public",
-          title: "Blog Post - Portfolio",
+          title: `Blog Post - ${BRAND.name}`,
         },
         props: true,
       },
@@ -125,7 +126,7 @@ const routes: RouteRecordRaw[] = [
         component: Contact,
         meta: {
           layout: "public",
-          title: "Contact - Portfolio",
+          title: `Contact - ${BRAND.name}`,
         },
       },
     ]

@@ -3,6 +3,7 @@ import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useBlogStore } from '../stores/blog'
 import Button from 'primevue/button'
+import ImageFallback from '../components/ImageFallback.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -118,11 +119,11 @@ onMounted(() => {
     <!-- ==========================
         THUMBNAIL IMAGE
     =========================== -->
-    <div v-if="post.thumbnail" class="max-w-4xl mx-auto">
-      <img
+    <div class="max-w-4xl mx-auto rounded-2xl overflow-hidden shadow-2xl aspect-video">
+      <ImageFallback
         :src="post.thumbnail"
         :alt="post.title"
-        class="w-full rounded-2xl shadow-2xl"
+        variant="blog"
       />
     </div>
 

@@ -2,15 +2,18 @@
  * UI Labels & Constants
  * Centraliza todos los labels, categorías, traducciones y textos de UI
  * Preparado para i18n cuando se necesite
+ * Datos personales se derivan de PROFILE_DATA (single source of truth)
  */
 
+import { PROFILE_DATA } from './profile.data'
+
 // ============================================================
-// HERO SECTION
+// HERO SECTION - Derivado de PROFILE_DATA
 // ============================================================
 
 export const HERO_DATA = {
-  fullName: 'Jhamil Yeyder Turpo Añasco',
-  role: 'Fullstack Developer & Project Manager',
+  fullName: PROFILE_DATA.name,
+  role: PROFILE_DATA.title,
   buttons: {
     projects: 'View Projects',
     contact: 'Contact Me',

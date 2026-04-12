@@ -1,7 +1,10 @@
 /**
  * Navigation & Social Links Data
  * Centraliza toda la info de navegación, redes sociales y branding
+ * Social links se derivan de PROFILE_DATA (single source of truth)
  */
+
+import { PROFILE_DATA } from './profile.data'
 
 export interface NavItem {
   label: string
@@ -40,35 +43,24 @@ export const FOOTER_LINKS: NavItem[] = [
 ]
 
 // ============================================================
-// SOCIAL LINKS
+// SOCIAL LINKS - Derivados de PROFILE_DATA.social
 // ============================================================
 
-export const SOCIAL_LINKS: SocialLink[] = [
-  {
-    platform: 'GitHub',
-    url: 'https://github.com/YeyderJHJL',
-    icon: 'pi pi-github',
-    ariaLabel: 'GitHub',
-  },
-  {
-    platform: 'LinkedIn',
-    url: 'https://www.linkedin.com/in/jhamil-yeyder-turpo',
-    icon: 'pi pi-linkedin',
-    ariaLabel: 'LinkedIn',
-  },
-  {
-    platform: 'Instagram',
-    url: 'https://www.instagram.com/jh_jl_yeyder/',
-    icon: 'pi pi-instagram',
-    ariaLabel: 'Instagram',
-  },
-  {
-    platform: 'Facebook',
-    url: 'https://web.facebook.com/profile.php?id=100085333879369',
-    icon: 'pi pi-facebook',
-    ariaLabel: 'Facebook',
-  },
+const socialConfig: { key: keyof typeof PROFILE_DATA.social; platform: string; icon: string }[] = [
+  { key: 'github', platform: 'GitHub', icon: 'pi pi-github' },
+  { key: 'linkedin', platform: 'LinkedIn', icon: 'pi pi-linkedin' },
+  { key: 'instagram', platform: 'Instagram', icon: 'pi pi-instagram' },
+  { key: 'facebook', platform: 'Facebook', icon: 'pi pi-facebook' },
 ]
+
+export const SOCIAL_LINKS: SocialLink[] = socialConfig
+  .filter(({ key }) => PROFILE_DATA.social[key])
+  .map(({ key, platform, icon }) => ({
+    platform,
+    url: PROFILE_DATA.social[key]!,
+    icon,
+    ariaLabel: platform,
+  }))
 
 // ============================================================
 // BRANDING

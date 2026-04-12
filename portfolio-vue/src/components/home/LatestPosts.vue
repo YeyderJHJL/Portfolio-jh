@@ -2,6 +2,7 @@
 import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBlogStore } from '../../stores/blog'
+import ImageFallback from '../ImageFallback.vue'
 
 const router = useRouter()
 const goToBlogs = () => router.push('/blog')
@@ -39,7 +40,13 @@ onMounted(() => {
             transition-all duration-300
           "
         >
-          <img :src="post.thumbnail" :alt="post.title" class="w-full h-40 md:h-52 object-cover" />
+          <div class="w-full h-40 md:h-52">
+            <ImageFallback
+              :src="post.thumbnail"
+              :alt="post.title"
+              variant="blog"
+            />
+          </div>
 
           <div class="p-4">
             <h3 class="font-semibold text-lg mb-1 text-text-light-primary dark:text-text-dark-primary">

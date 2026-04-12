@@ -32,10 +32,10 @@ onMounted(() => {
           :key="skill.name"
           class="flex items-center gap-3"
         >
-          <div class="w-18 h-18 flex items-center justify-center rounded
+          <div class="w-12 h-12 flex items-center justify-center rounded-lg
                       bg-primary-500 dark:bg-primary-700
                       text-primary-900 dark:text-accent-200">
-            <span class="text-lg font-bold">{{ skill.icon }}</span>
+            <i :class="[skill.icon, 'text-2xl']"></i>
           </div>
 
           <div class="flex-1">

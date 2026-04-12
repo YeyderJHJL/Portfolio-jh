@@ -25,8 +25,8 @@ export const PROJECTS_DATA: Project[] = [
       skills: ["Architecture", "Full Stack", "Leadership"],
     },
     images: {
-      thumbnail: "https://via.placeholder.com/400x300?text=IDEMA",
-      hero: "https://via.placeholder.com/1200x600?text=IDEMA",
+      thumbnail: "",
+      hero: "",
     },
     challenges: [
       {
@@ -72,8 +72,8 @@ export const PROJECTS_DATA: Project[] = [
       skills: ["Architecture", "Coordination", "Full Stack"],
     },
     images: {
-      thumbnail: "https://via.placeholder.com/400x300?text=ValixAI",
-      hero: "https://via.placeholder.com/1200x600?text=ValixAI",
+      thumbnail: "",
+      hero: "",
     },
     challenges: [
       {
@@ -121,8 +121,8 @@ export const PROJECTS_DATA: Project[] = [
       skills: ["Leadership", "Architecture", "Full Stack"],
     },
     images: {
-      thumbnail: "https://via.placeholder.com/400x300?text=EnWuan",
-      hero: "https://via.placeholder.com/1200x600?text=EnWuan",
+      thumbnail: "",
+      hero: "",
     },
     challenges: [
       {
@@ -220,8 +220,8 @@ export const PROJECTS_DATA: Project[] = [
       skills: ["Leadership", "Architecture", "Requirements"],
     },
     images: {
-      thumbnail: "https://via.placeholder.com/400x300?text=MAC+Service",
-      hero: "https://via.placeholder.com/1200x600?text=MAC+Service",
+      thumbnail: "",
+      hero: "",
     },
     challenges: [
       {
@@ -267,8 +267,8 @@ export const PROJECTS_DATA: Project[] = [
       skills: ["Leadership", "Coordination", "Mentoring"],
     },
     images: {
-      thumbnail: "https://via.placeholder.com/400x300?text=FlowTechAI",
-      hero: "https://via.placeholder.com/1200x600?text=FlowTechAI",
+      thumbnail: "",
+      hero: "",
     },
     challenges: [
       {
@@ -316,8 +316,8 @@ export const PROJECTS_DATA: Project[] = [
       skills: ["Leadership", "QA", "Coordination"],
     },
     images: {
-      thumbnail: "https://via.placeholder.com/400x300?text=AWS+Platform",
-      hero: "https://via.placeholder.com/1200x600?text=AWS+Platform",
+      thumbnail: "",
+      hero: "",
     },
     challenges: [
       {
@@ -367,8 +367,8 @@ export const PROJECTS_DATA: Project[] = [
       skills: ["Leadership", "Coordination", "Mentoring"],
     },
     images: {
-      thumbnail: "https://via.placeholder.com/400x300?text=LEAD+UNSA",
-      hero: "https://via.placeholder.com/1200x600?text=LEAD+UNSA",
+      thumbnail: "",
+      hero: "",
     },
     challenges: [
       {
@@ -413,8 +413,8 @@ export const PROJECTS_DATA: Project[] = [
       skills: ["QA", "Coordination"],
     },
     images: {
-      thumbnail: "https://via.placeholder.com/400x300?text=ISC+Platform",
-      hero: "https://via.placeholder.com/1200x600?text=ISC+Platform",
+      thumbnail: "",
+      hero: "",
     },
     challenges: [
       {
@@ -459,8 +459,8 @@ export const PROJECTS_DATA: Project[] = [
       skills: ["Leadership", "Coordination"],
     },
     images: {
-      thumbnail: "https://via.placeholder.com/400x300?text=Hack4Edu",
-      hero: "https://via.placeholder.com/1200x600?text=Hack4Edu",
+      thumbnail: "",
+      hero: "",
     },
     challenges: [
       {
@@ -505,8 +505,8 @@ export const PROJECTS_DATA: Project[] = [
       skills: ["Leadership", "Coordination", "Mentoring"],
     },
     images: {
-      thumbnail: "https://via.placeholder.com/400x300?text=DESOGEP",
-      hero: "https://via.placeholder.com/1200x600?text=DESOGEP",
+      thumbnail: "",
+      hero: "",
     },
     challenges: [
       {
@@ -551,8 +551,8 @@ export const PROJECTS_DATA: Project[] = [
       skills: ["Leadership", "Coordination", "Mentoring"],
     },
     images: {
-      thumbnail: "https://via.placeholder.com/400x300?text=Ingenia",
-      hero: "https://via.placeholder.com/1200x600?text=Ingenia",
+      thumbnail: "",
+      hero: "",
     },
     challenges: [
       {
@@ -598,8 +598,8 @@ export const PROJECTS_DATA: Project[] = [
       skills: ["Leadership", "Coordination"],
     },
     images: {
-      thumbnail: "https://via.placeholder.com/400x300?text=PMI+Sur",
-      hero: "https://via.placeholder.com/1200x600?text=PMI+Sur",
+      thumbnail: "",
+      hero: "",
     },
     challenges: [
       {

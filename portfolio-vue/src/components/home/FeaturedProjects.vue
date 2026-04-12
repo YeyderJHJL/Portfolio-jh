@@ -2,6 +2,7 @@
 import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProjectsStore } from '../../stores/projects'
+import ImageFallback from '../ImageFallback.vue'
 
 const router = useRouter()
 const goToProjects = () => router.push('/projects')
@@ -63,12 +64,14 @@ onMounted(() => {
       >
         <!-- Image -->
         <div class="relative w-full aspect-video overflow-hidden bg-primary-300 dark:bg-primary-700">
-          <img
+          <ImageFallback
             :src="project.images.thumbnail"
             :alt="project.title"
-            class="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
-          />
-          <div class="absolute inset-0 bg-primary-900/0 hover:bg-primary-900/20 dark:hover:bg-primary-950/40 transition-colors duration-300"></div>
+            variant="project"
+            class="hover:scale-110 transition-transform duration-500"
+          >
+            <div class="absolute inset-0 bg-primary-900/0 hover:bg-primary-900/20 dark:hover:bg-primary-950/40 transition-colors duration-300"></div>
+          </ImageFallback>
         </div>
 
         <!-- Content -->

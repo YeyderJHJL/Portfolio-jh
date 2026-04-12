@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProjectsStore } from '../stores/projects'
 import { PROJECT_CATEGORY_LABELS, SORT_LABELS, PROJECTS_PAGE } from '../data'
+import ImageFallback from '../components/ImageFallback.vue'
 import Button from 'primevue/button'
 import Select from 'primevue/select'
 import TieredMenu from 'primevue/tieredmenu'
@@ -263,8 +264,9 @@ onMounted(() => {
                 label: { class: 'flex-1 bg-transparent text-text-light-primary dark:text-text-dark-primary text-base truncate' },
                 dropdownIcon: { class: 'pi pi-chevron-down text-text-light-muted dark:text-text-dark-muted text-sm ml-2' },
                 overlay: { class: 'mt-2 bg-primary-400 dark:bg-primary-800 border-2 border-primary-300 dark:border-primary-700 shadow-xl' },
-                list: { class: 'p-2 space-y-1' },
-                option: { class: 'px-4 py-2.5 rounded-lg text-text-light-primary dark:text-text-dark-primary hover:bg-primary-300 dark:hover:bg-primary-700 cursor-pointer transition-all font-medium' }
+                listContainer: { style: 'max-height: none !important; overflow: visible !important;' },
+                list: { class: 'py-2 space-y-1' },
+                option: { class: 'px-4 py-2.5 text-text-light-primary dark:text-text-dark-primary hover:bg-primary-300 dark:hover:bg-primary-700 cursor-pointer transition-all font-medium' }
               }"
             />
           </div>
@@ -535,28 +537,29 @@ onMounted(() => {
       >
         <!-- Image -->
         <div class="relative w-full aspect-video overflow-hidden bg-primary-300 dark:bg-primary-700">
-          <img
+          <ImageFallback
             :src="project.images.thumbnail"
             :alt="project.title"
-            loading="lazy"
-            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-          />
-          <div class="absolute inset-0 bg-linear-to-t from-primary-900/80 via-primary-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          
-          <!-- Category Badge -->
-          <div class="absolute top-3 left-3">
-            <span class="px-3 py-1.5 rounded-full bg-accent-700 text-white text-xs font-bold shadow-lg backdrop-blur-sm">
-              {{ PROJECT_CATEGORY_LABELS[project.category?.category || 'other'] }}
-            </span>
-          </div>
+            variant="project"
+            class="group-hover:scale-110 transition-transform duration-500"
+          >
+            <div class="absolute inset-0 bg-linear-to-t from-primary-900/80 via-primary-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-          <!-- Status Badge -->
-          <div v-if="project.status === 'in-progress'" class="absolute top-3 right-3">
-            <span class="px-3 py-1.5 rounded-full bg-primary-900/90 text-white text-xs font-bold shadow-lg backdrop-blur-sm flex items-center gap-1.5">
-              <i class="pi pi-clock"></i>
-              In Progress
-            </span>
-          </div>
+            <!-- Category Badge -->
+            <div class="absolute top-3 left-3">
+              <span class="px-3 py-1.5 rounded-full bg-accent-700 text-white text-xs font-bold shadow-lg backdrop-blur-sm">
+                {{ PROJECT_CATEGORY_LABELS[project.category?.category || 'other'] }}
+              </span>
+            </div>
+
+            <!-- Status Badge -->
+            <div v-if="project.status === 'in-progress'" class="absolute top-3 right-3">
+              <span class="px-3 py-1.5 rounded-full bg-primary-900/90 text-white text-xs font-bold shadow-lg backdrop-blur-sm flex items-center gap-1.5">
+                <i class="pi pi-clock"></i>
+                In Progress
+              </span>
+            </div>
+          </ImageFallback>
         </div>
 
         <!-- Content -->

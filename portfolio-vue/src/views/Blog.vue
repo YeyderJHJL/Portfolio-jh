@@ -5,6 +5,7 @@ import { useBlogStore } from '../stores/blog'
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import { BLOG_PAGE } from '../data'
+import ImageFallback from '../components/ImageFallback.vue'
 
 const router = useRouter()
 const blogStore = useBlogStore()
@@ -80,17 +81,18 @@ onMounted(() => {
           >
             <div class="md:flex">
               <!-- Image -->
-              <div v-if="post.thumbnail" class="md:w-2/5 relative overflow-hidden bg-primary-300 dark:bg-primary-700 aspect-video md:aspect-auto">
-                <img
+              <div class="md:w-2/5 relative overflow-hidden bg-primary-300 dark:bg-primary-700 aspect-video md:aspect-auto">
+                <ImageFallback
                   :src="post.thumbnail"
                   :alt="post.title"
-                  loading="lazy"
-                  class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div class="absolute inset-0 bg-linear-to-t from-primary-900/60 to-transparent"></div>
-                <span class="absolute top-4 left-4 px-3 py-1.5 rounded-full bg-accent-700 text-white text-xs font-bold shadow-lg">
-                  {{ BLOG_PAGE.featuredBadge }}
-                </span>
+                  variant="blog"
+                  class="group-hover:scale-110 transition-transform duration-500"
+                >
+                  <div class="absolute inset-0 bg-linear-to-t from-primary-900/60 to-transparent"></div>
+                  <span class="absolute top-4 left-4 px-3 py-1.5 rounded-full bg-accent-700 text-white text-xs font-bold shadow-lg">
+                    {{ BLOG_PAGE.featuredBadge }}
+                  </span>
+                </ImageFallback>
               </div>
 
               <!-- Content -->
@@ -253,14 +255,15 @@ onMounted(() => {
         >
           <div class="md:flex">
             <!-- Image -->
-            <div v-if="post.thumbnail" class="md:w-2/5 relative overflow-hidden bg-primary-300 dark:bg-primary-700 aspect-video md:aspect-auto">
-              <img
+            <div class="md:w-2/5 relative overflow-hidden bg-primary-300 dark:bg-primary-700 aspect-video md:aspect-auto">
+              <ImageFallback
                 :src="post.thumbnail"
                 :alt="post.title"
-                loading="lazy"
-                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-              />
-              <div class="absolute inset-0 bg-linear-to-t from-primary-900/40 to-transparent"></div>
+                variant="blog"
+                class="group-hover:scale-110 transition-transform duration-500"
+              >
+                <div class="absolute inset-0 bg-linear-to-t from-primary-900/40 to-transparent"></div>
+              </ImageFallback>
             </div>
 
             <!-- Content -->

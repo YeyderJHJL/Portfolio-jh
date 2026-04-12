@@ -179,6 +179,8 @@ export interface UserProfile {
     github?: string;
     linkedin?: string;
     twitter?: string;
+    instagram?: string;
+    facebook?: string;
     email: string;
     website?: string;
   };

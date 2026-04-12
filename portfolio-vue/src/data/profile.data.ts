@@ -184,8 +184,10 @@ export const PROFILE_DATA: UserProfile = {
   bio: "Estudiante de Ingeniería de Sistemas con formación complementaria en Administración en la UNSA, cursando el 9.° ciclo, perteneciente al tercio superior, becario PRONABEC. Experiencia en desarrollo Full Stack, arquitectura de software y liderazgo de proyectos tecnológicos.",
   avatar: "images/profile/perfil_portfolio.png",
   social: {
-    github: "https://github.com/jhamil-turpo",
+    github: "https://github.com/YeyderJHJL",
     linkedin: "https://www.linkedin.com/in/jhamil-yeyder-turpo",
+    instagram: "https://www.instagram.com/jh_jl_yeyder/",
+    facebook: "https://web.facebook.com/profile.php?id=100085333879369",
     email: "jturpoan@unsa.edu.pe",
     website: "https://portfolio-jh-pi.vercel.app/",
   },
